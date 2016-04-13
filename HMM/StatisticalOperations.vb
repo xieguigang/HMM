@@ -11,7 +11,7 @@ Public Module StatisticalOperations
     ''' <param name="states"> A Vector which is the model states </param>
     ''' <returns> Normalized probabilities as a Hashtable </returns>
 
-    Public Function normalize(ByVal probabilities As List(Of Dictionary(Of String, Double)), ByVal states As List(Of String)) As List(Of Dictionary(Of String, Double))
+    Public Function normalize(probabilities As List(Of Dictionary(Of String, Double)), states As List(Of String)) As List(Of Dictionary(Of String, Double))
         Dim sum As Double = 0.0
         If states.Count = 1 Then Return probabilities
 
@@ -31,7 +31,7 @@ Public Module StatisticalOperations
         Return probabilities
     End Function
 
-    Public Function normalize(ByVal data As List(Of Double)) As List(Of Double)
+    Public Function normalize(data As List(Of Double)) As List(Of Double)
         Dim res As New List(Of Double)
         Dim sum As Double = 0.0
 

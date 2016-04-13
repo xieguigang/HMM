@@ -2,14 +2,12 @@ Imports System.Collections.Generic
 
 Namespace Util.Validation
 
-
-
     ''' <summary>
     ''' Created by Ahmed Hani Ibrahim on 12/19/2015.
     ''' </summary>
     Public Module Validator
 
-        Public Function summationIsOne(ByVal list As Dictionary(Of String, Double)) As Boolean
+        Public Function summationIsOne(list As Dictionary(Of String, Double)) As Boolean
             Dim sum As Double = 0.0
 
             For Each item As Double In list.Values
@@ -19,7 +17,7 @@ Namespace Util.Validation
             Return sum = 1.0
         End Function
 
-        Public Function isValidInitialProbabilities(ByVal states As List(Of String), ByVal initialProbabilities As Dictionary(Of String, Double)) As Boolean
+        Public Function isValidInitialProbabilities(states As List(Of String), initialProbabilities As Dictionary(Of String, Double)) As Boolean
             If states.Count <> initialProbabilities.Count Then Return False
 
             For i As Integer = 0 To states.Count - 1
@@ -37,7 +35,7 @@ Namespace Util.Validation
             Return True
         End Function
 
-        Public Function isValidTransitionMatrix(ByVal transitionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), ByVal states As List(Of String)) As Boolean
+        Public Function isValidTransitionMatrix(transitionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), states As List(Of String)) As Boolean
             If transitionMatrix.Count <> states.Count * states.Count Then Return False
 
             Dim frequency As New Dictionary(Of KeyValuePair(Of String, String), Boolean?)
@@ -67,7 +65,7 @@ Namespace Util.Validation
             Return True
         End Function
 
-        Public Function isValidEmissionMatrix(ByVal emissionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), ByVal states As List(Of String), ByVal observations As List(Of String)) As Boolean
+        Public Function isValidEmissionMatrix(emissionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), states As List(Of String), observations As List(Of String)) As Boolean
             If emissionMatrix.Count <> observations.Count * states.Count Then Return False
 
             For Each item As KeyValuePair(Of String, String) In emissionMatrix.Keys
@@ -100,5 +98,4 @@ Namespace Util.Validation
             Return True
         End Function
     End Module
-
 End Namespace

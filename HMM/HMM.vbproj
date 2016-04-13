@@ -64,9 +64,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataDecoding.vb" />
-    <Compile Include="ML\HMM\HiddenMarkovModel.vb" />
-    <Compile Include="ML\HMM\HMM_For_Testing.vb" />
-    <Compile Include="ML\HMM\Main.vb" />
+    <Compile Include="HMM\HiddenMarkovModel.vb" />
+    <Compile Include="HMM\HMM_For_Testing.vb" />
+    <Compile Include="HMM\Main.vb" />
     <Compile Include="StatisticalOperations.vb" />
     <Compile Include="Util\Parser\JsonParser.vb" />
     <Compile Include="Util\Validation\Validator.vb" />
