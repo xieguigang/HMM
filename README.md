@@ -1,4 +1,9 @@
 # Hidden-Markov-Model
+
+Hidden-Markov-Model in VisualBasic
+
+This library was imports from github repository: https://github.com/AhmedHani/Hidden-Markov-Model
+
 A Java implementation of Hidden Markov Model.
 The implementation contains Brute Force, Forward-backward, Viterbi and Baum-Welch algorithms
 
