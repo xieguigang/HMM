@@ -3,6 +3,7 @@ Imports Microsoft.VisualBasic
 Imports Microsoft.VisualBasic.Serialization
 
 Public Module Main
+
     Public Sub Main()
         Dim jp As Util.Parser.JsonParser = Util.Parser.JsonParser.LoadJson("F:\HMM\Resources\test_HMM.json")
 
@@ -55,11 +56,12 @@ Public Module Main
         Console.WriteLine(hmm.evaluateUsingForwardAlgorithm(sampleStates, sampleO))
         Console.WriteLine(hmm.getOptimalStateSequenceUsingViterbiAlgorithm(states, sampleO))
         hmm.estimateParametersUsingBaumWelchAlgorithm(states, sampleO, False)
-        Console.WriteLine(hmm.InitialProbabilities)
-        Console.WriteLine(hmm.TransitionMatrix)
-        Console.WriteLine(hmm.EmissionMatrix)
+        Console.WriteLine(hmm.InitialProbabilities.GetJson)
+        Console.WriteLine(hmm.TransitionMatrix.GetJson)
+        Console.WriteLine(hmm.EmissionMatrix.GetJson)
         Console.WriteLine(hmm.evaluateUsingBruteForce(sampleStates, sampleO))
         Console.WriteLine(hmm.evaluateUsingForwardAlgorithm(sampleStates, sampleO))
 
+        Pause()
     End Sub
 End Module
