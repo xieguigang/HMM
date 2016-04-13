@@ -2,7 +2,7 @@ Imports System
 Imports System.Text
 Imports Microsoft.VisualBasic.Serialization
 
-Namespace Util.Parser
+Namespace Model
 
     Public Structure modelInfo
         Public Property name As String
@@ -29,7 +29,7 @@ Namespace Util.Parser
     ''' <summary>
     ''' Created by Ahmed Hani Ibrahim on 12/19/2015.
     ''' </summary>
-    Public Class JsonParser
+    Public Class JsonHMM
         Public Property modelInfo As modelInfo
         Public Property modelData As modelData
 
@@ -37,8 +37,8 @@ Namespace Util.Parser
             Return Me.GetJson
         End Function
 
-        Public Shared Function LoadJson(path As String) As JsonParser
-            Return JsonContract.LoadJsonFile(Of JsonParser)(path)
+        Public Shared Function LoadJson(path As String) As JsonHMM
+            Return JsonContract.LoadJsonFile(Of JsonHMM)(path)
         End Function
     End Class
 End Namespace

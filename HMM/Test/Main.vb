@@ -1,28 +1,29 @@
 Imports System.Reflection
 Imports HMM
+Imports HMM.Model
 Imports Microsoft.VisualBasic
 Imports Microsoft.VisualBasic.Serialization
 
 Public Module Main
 
-    Public Function TestData() As Util.Parser.JsonParser
-        Dim inf As New Util.Parser.modelInfo With {
+    Public Function TestData() As JsonHMM
+        Dim inf As New modelInfo With {
             .name = NameOf(TestData),
             .date = Now.ToString,
             .title = MethodBase.GetCurrentMethod.GetFullName
         }
-        Dim data As New Util.Parser.modelData With {
+        Dim data As New modelData With {
             .emissions = {"R->F->0.4", "R->U->0.5", "R->D->0.1", "S->F->0.4", "S->U->0.0", "S->D->0.6", "C->F->0.4", "C->U->0.2", "C->D->0.4"},
             .transitions = {"R->R->0.2", "R->S->0.1", "R->C->0.7", "S->R->0.3", "S->S->0.4", "S->C->0.3", "C->R->0.1", "C->S->0.4", "C->C->0.5"},
             .init_props = New Dictionary(Of String, Double) From {{"R", 0.3}, {"S", 0.4}, {"C", 0.3}},
             .observations = {"F", "U", "D"},
             .states = {"R", "S", "C"}
         }
-        Return New Util.Parser.JsonParser With {.modelInfo = inf, .modelData = data}
+        Return New JsonHMM With {.modelInfo = inf, .modelData = data}
     End Function
 
     Public Sub Main()
-        Dim jp As Util.Parser.JsonParser = TestData()
+        Dim jp As JsonHMM = TestData()
 
         Call jp.GetJson.SaveTo("F:\HMM\Resources\test_HMM.json")
 

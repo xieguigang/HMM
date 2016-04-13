@@ -1,5 +1,6 @@
 Imports Microsoft.VisualBasic
 Imports System
+Imports HMM.Model
 
 Public Class HiddenMarkovModel
 
@@ -41,7 +42,7 @@ Public Class HiddenMarkovModel
     ''' <param name="initialProbabilities"> A hashtable that is the initial probability vector of the states </param>
     ''' <returns> [True/False] which specifies if the vector elements are logically right or not </returns>
     Private Function validateInitialProbability(initialProbabilities As Dictionary(Of String, Double)) As Boolean
-        Return Util.Validation.Validator.summationIsOne(initialProbabilities)
+        Return Validator.summationIsOne(initialProbabilities)
     End Function
 
     ''' 
@@ -49,7 +50,7 @@ Public Class HiddenMarkovModel
     ''' <param name="initialProbabilities"> A hashtable that is the initial probability vector of the states </param>
     ''' <returns> [True/False] which specifies if the sizes are matched or not </returns>
     Private Function validateInitialProbabilitiesAndStates(states As List(Of String), initialProbabilities As Dictionary(Of String, Double)) As Boolean
-        Return Util.Validation.Validator.isValidInitialProbabilities(states, initialProbabilities)
+        Return Validator.isValidInitialProbabilities(states, initialProbabilities)
     End Function
 
     ''' 
@@ -57,7 +58,7 @@ Public Class HiddenMarkovModel
     ''' <param name="states"> A Vector that is the states of the model </param>
     ''' <returns> [True/False] which specifies if the matrix elements are logically right or not </returns>
     Private Function validateTransitionMatrix(transitionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), states As List(Of String)) As Boolean
-        Return Util.Validation.Validator.isValidTransitionMatrix(transitionMatrix, states)
+        Return Validator.isValidTransitionMatrix(transitionMatrix, states)
     End Function
 
     ''' 
@@ -66,7 +67,7 @@ Public Class HiddenMarkovModel
     ''' <param name="observations"> A Vector that is the model observations </param>
     ''' <returns> [True/False] True/False which specifies if the matrix elements are logically right or not </returns>
     Private Function validateEmissionMatrix(emissionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), states As List(Of String), observations As List(Of String)) As Boolean
-        Return Util.Validation.Validator.isValidEmissionMatrix(emissionMatrix, states, observations)
+        Return Validator.isValidEmissionMatrix(emissionMatrix, states, observations)
     End Function
 
     ''' <summary>
@@ -125,13 +126,6 @@ Public Class HiddenMarkovModel
         Return Me.EmissionMatrix(New KeyValuePair(Of String, String)(state, observation))
     End Function
 
-    ''' 
-    ''' <param name="state"> A string that is a state in the model </param>
-    ''' <returns> A Double that is the initial probability value of the state </returns>
-    Public Function getInitialProbability(state As String) As Double
-        Return Me.InitialProbabilities(state)
-    End Function
-
     ''' <summary>
     ''' Get the Alpha values which is obtained from the forward function </summary>
     ''' <returns> A Hashtable which represents the Alpha values </returns>
@@ -156,7 +150,7 @@ Public Class HiddenMarkovModel
         Dim result As Double = 0.0
 
         For i As Integer = 0 To states.Count - 1
-            probability = Me.getInitialProbability(states(i))
+            probability = Me._InitialProbabilities(states(i))
             previousState = ""
             For j As Integer = 0 To observations.Count - 1
                 Dim ___emissionValue As Double = Me.getEmissionValue(states(j), observations(j))
@@ -217,7 +211,7 @@ Public Class HiddenMarkovModel
     Public Function calculateForwardProbabilities(states As List(Of String), observations As List(Of String)) As List(Of Dictionary(Of String, Double))
         Me.Alpha.Add(New Dictionary(Of String, Double))
         For i As Integer = 0 To states.Count - 1
-            Me.Alpha(0)(states(i)) = Me.getInitialProbability(states(i)) * Me.getEmissionValue(states(i), observations(0))
+            Me.Alpha(0)(states(i)) = Me._InitialProbabilities(states(i)) * Me.getEmissionValue(states(i), observations(0))
         Next
 
         For t As Integer = 1 To observations.Count - 1
@@ -275,7 +269,7 @@ Public Class HiddenMarkovModel
         For i As Integer = 0 To observations.Count - 1
             If i = 0 Then
                 For Each state As String In states
-                    Dim ___initialProbability As Double = Me.getInitialProbability(state)
+                    Dim ___initialProbability As Double = Me._InitialProbabilities(state)
                     Dim emissionProbability As Double = Me.getEmissionValue(state, observations(i))
                     statesProbabilities(state) = Math.Log(___initialProbability) + Math.Log(emissionProbability)
                 Next

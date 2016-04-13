@@ -79,12 +79,11 @@
     <Import Include="System.Diagnostics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataDecoding.vb" />
-    <Compile Include="HMM\HiddenMarkovModel.vb" />
-    <Compile Include="HMM\HMM_For_Testing.vb" />
+    <Compile Include="Model\DataDecoding.vb" />
+    <Compile Include="HiddenMarkovModel.vb" />
     <Compile Include="StatisticalOperations.vb" />
-    <Compile Include="Util\Parser\JsonParser.vb" />
-    <Compile Include="Util\Validation\Validator.vb" />
+    <Compile Include="Model\JsonParser.vb" />
+    <Compile Include="Model\Validator.vb" />
     <Compile Include="Properties\AssemblyInfo.vb" />
   </ItemGroup>
   <ItemGroup>

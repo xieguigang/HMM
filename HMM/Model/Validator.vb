@@ -1,6 +1,6 @@
 Imports System.Collections.Generic
 
-Namespace Util.Validation
+Namespace Model
 
     ''' <summary>
     ''' Created by Ahmed Hani Ibrahim on 12/19/2015.
