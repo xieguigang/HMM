@@ -44,8 +44,8 @@ Namespace ML.HMM
 		''' <returns> [True/False] which specifies if the vector elements are logically right or not </returns>
 
 		Private Function validateInitialProbability(ByVal initialProbabilities As Dictionary(Of String, Double)) As Boolean
-			Return Util.Validation.Validator.Instance.summationIsOne(initialProbabilities)
-		End Function
+            Return Util.Validation.Validator.summationIsOne(initialProbabilities)
+        End Function
 
 		''' 
 		''' <param name="states"> A Vector<String> that is the states of the model </param>
@@ -53,8 +53,8 @@ Namespace ML.HMM
 		''' <returns> [True/False] which specifies if the sizes are matched or not </returns>
 
 		Private Function validateInitialProbabilitiesAndStates(ByVal states As List(Of String), ByVal initialProbabilities As Dictionary(Of String, Double)) As Boolean
-			Return Util.Validation.Validator.Instance.isValidInitialProbabilities(states, initialProbabilities)
-		End Function
+            Return Util.Validation.Validator.isValidInitialProbabilities(states, initialProbabilities)
+        End Function
 
 		''' 
 		''' <param name="transitionMatrix"> A Hashtable that is the transition matrix between the states </param>
@@ -62,8 +62,8 @@ Namespace ML.HMM
 		''' <returns> [True/False] which specifies if the matrix elements are logically right or not </returns>
 
 		Private Function validateTransitionMatrix(ByVal transitionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), ByVal states As List(Of String)) As Boolean
-			Return Util.Validation.Validator.Instance.isValidTransitionMatrix(transitionMatrix, states)
-		End Function
+            Return Util.Validation.Validator.isValidTransitionMatrix(transitionMatrix, states)
+        End Function
 
 		''' 
 		''' <param name="emissionMatrix"> A Hashtable that is the emission matrix between the states and the observations </param>
@@ -72,56 +72,56 @@ Namespace ML.HMM
 		''' <returns> [True/False] True/False which specifies if the matrix elements are logically right or not </returns>
 
 		Private Function validateEmissionMatrix(ByVal emissionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), ByVal states As List(Of String), ByVal observations As List(Of String)) As Boolean
-			Return Util.Validation.Validator.Instance.isValidEmissionMatrix(emissionMatrix, states, observations)
-		End Function
+            Return Util.Validation.Validator.isValidEmissionMatrix(emissionMatrix, states, observations)
+        End Function
 
 		''' <summary>
 		''' Get the number of states in the model </summary>
 		''' <returns> An integer that specifies the number of states in the model </returns>
 
-		Public Overridable Property NumberOfStates As Integer
+		Public  Property NumberOfStates As Integer
 
         ''' <summary>
         ''' Get the model states </summary>
         ''' <returns> A Vector which is the states of the model </returns>
 
-        Public Overridable ReadOnly Property States As List(Of String)
+        Public  ReadOnly Property States As List(Of String)
 
         ''' <summary>
         ''' Get the number of observations in the model </summary>
         ''' <returns> An integer that specifies the number of observations in the model </returns>
 
-        Public Overridable Property NumberOfObservations As Integer
+        Public  Property NumberOfObservations As Integer
 
         ''' <summary>
         ''' Get the model observations </summary>
         ''' <returns> A Vector which is the observations of the model </returns>
-        Public Overridable ReadOnly Property Observations As List(Of String)
+        Public  ReadOnly Property Observations As List(Of String)
 
         ''' <summary>
         ''' Get the initial probability vector of the states </summary>
         ''' <returns> Hashtable that is the initial probability vector of the states </returns>
 
-        Public Overridable Property InitialProbabilities As Dictionary(Of String, Double)
+        Public  Property InitialProbabilities As Dictionary(Of String, Double)
 
         ''' <summary>
         ''' Get the transition matrix between the states </summary>
         ''' <returns> Hashtable that is the transition matrix between the states </returns>
 
-        Public Overridable Property TransitionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double)
+        Public  Property TransitionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double)
 
         ''' <summary>
         ''' Get the emission matrix between the states and the observations </summary>
         ''' <returns> Hashtable that is the emission matrix between the states and the observations </returns>
 
-        Public Overridable Property EmissionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double)
+        Public  Property EmissionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double)
 
         ''' 
         ''' <param name="firstState"> A string that is a state in the model </param>
         ''' <param name="secondState"> A string that is a state in the model </param>
         ''' <returns> A Double that is the transition value between the 2 states </returns>
 
-        Public Overridable Function getTransitionValue(ByVal firstState As String, ByVal secondState As String) As Double
+        Public  Function getTransitionValue(ByVal firstState As String, ByVal secondState As String) As Double
 			Return Me.transitionMatrix(New KeyValuePair(Of String, String)(firstState, secondState))
 		End Function
 
@@ -130,7 +130,7 @@ Namespace ML.HMM
 		''' <param name="observation"> A string that is an observation in the model </param>
 		''' <returns> A Double that is the value of the emission between the state and the observation </returns>
 
-		Public Overridable Function getEmissionValue(ByVal state As String, ByVal observation As String) As Double
+		Public  Function getEmissionValue(ByVal state As String, ByVal observation As String) As Double
 			Return Me.emissionMatrix(New KeyValuePair(Of String, String)(state, observation))
 		End Function
 
@@ -138,7 +138,7 @@ Namespace ML.HMM
 		''' <param name="state"> A string that is a state in the model </param>
 		''' <returns> A Double that is the initial probability value of the state </returns>
 
-		Public Overridable Function getInitialProbability(ByVal state As String) As Double
+		Public  Function getInitialProbability(ByVal state As String) As Double
 			Return Me.initialProbabilities(state)
 		End Function
 
@@ -149,7 +149,7 @@ Namespace ML.HMM
 		''' <returns> A Double The probability to get this sequence of states and observations </returns>
 		''' <exception cref="Exception"> The sizes of states and observations sequences must be the same. </exception>
 
-		Public Overridable Function evaluateUsingBruteForce(ByVal states As List(Of String), ByVal observations As List(Of String)) As Double
+		Public  Function evaluateUsingBruteForce(ByVal states As List(Of String), ByVal observations As List(Of String)) As Double
 			If states.Count <> observations.Count Then Throw New Exception("States and Observations must be at a same size!")
 
 			Dim previousState As String = ""
@@ -181,7 +181,7 @@ Namespace ML.HMM
 		''' <returns> A Double The probability to get this sequence of states and observations </returns>
 		''' <exception cref="Exception"> The sizes of states and observations sequences must be the same. </exception>
 
-		Public Overridable Function evaluateUsingForward_Backward(ByVal states As List(Of String), ByVal observations As List(Of String)) As Double
+		Public  Function evaluateUsingForward_Backward(ByVal states As List(Of String), ByVal observations As List(Of String)) As Double
 			If observations.Count <> states.Count Then Throw New Exception("States and Observations must be at a same size")
 
 			Dim result As Double = 0.0
@@ -206,7 +206,7 @@ Namespace ML.HMM
 		''' <param name="observations"> A Vector that is the model observations </param>
 		''' <returns> A Vector which contains the alpha values </returns>
 
-		Public Overridable Function calculateForwardProbabilities(ByVal states As List(Of String), ByVal observations As List(Of String)) As List(Of Dictionary(Of String, Double))
+		Public  Function calculateForwardProbabilities(ByVal states As List(Of String), ByVal observations As List(Of String)) As List(Of Dictionary(Of String, Double))
 			Dim alpha As New List(Of Dictionary(Of String, Double))
 			alpha.Add(New Dictionary(Of String, Double))
 			Dim sum1 As Double = 0.0
@@ -247,7 +247,7 @@ Namespace ML.HMM
 		''' <param name="observations"> A Vector that is the model observations </param>
 		''' <returns> A Vector which contains the Beta values </returns>
 
-		Public Overridable Function calculateBackwardProbabilities(ByVal states As List(Of String), ByVal observations As List(Of String)) As List(Of Dictionary(Of String, Double))
+		Public  Function calculateBackwardProbabilities(ByVal states As List(Of String), ByVal observations As List(Of String)) As List(Of Dictionary(Of String, Double))
 			Dim beta As New List(Of Dictionary(Of String, Double))
 			beta.Add(New Dictionary(Of String, Double))
 			Dim sum1 As Double = 0.0

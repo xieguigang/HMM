@@ -63,11 +63,11 @@
     <Import Include="System.Diagnostics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DA\Processing\DataDecoding.vb" />
+    <Compile Include="DataDecoding.vb" />
     <Compile Include="ML\HMM\HiddenMarkovModel.vb" />
     <Compile Include="ML\HMM\HMM_For_Testing.vb" />
     <Compile Include="ML\HMM\Main.vb" />
-    <Compile Include="SA\Statistics\StatisticalOperations.vb" />
+    <Compile Include="StatisticalOperations.vb" />
     <Compile Include="Util\Parser\JsonParser.vb" />
     <Compile Include="Util\Validation\Validator.vb" />
     <Compile Include="Properties\AssemblyInfo.vb" />
@@ -78,5 +78,6 @@
       <Name>+Microsoft.VisualBasic.Architecture.Framework</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

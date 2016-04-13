@@ -4,50 +4,40 @@ Namespace Util.Validation
 
 
 
-	''' <summary>
-	''' Created by Ahmed Hani Ibrahim on 12/19/2015.
-	''' </summary>
-	Public Class Validator
-		Private Shared ourInstance As New Validator
+    ''' <summary>
+    ''' Created by Ahmed Hani Ibrahim on 12/19/2015.
+    ''' </summary>
+    Public Module Validator
 
-        Public Shared ReadOnly Property Instance As Validator
-            Get
-                Return ourInstance
-            End Get
-        End Property
+        Public Function summationIsOne(ByVal list As Dictionary(Of String, Double)) As Boolean
+            Dim sum As Double = 0.0
 
-        Private Sub New()
-		End Sub
+            For Each item As Double In list.Values
+                sum += item
+            Next
 
-		Public Overridable Function summationIsOne(ByVal list As Dictionary(Of String, Double)) As Boolean
-			Dim sum As Double = 0.0
+            Return sum = 1.0
+        End Function
 
-			For Each item As Double In list.Values
-				sum += item
-			Next
+        Public Function isValidInitialProbabilities(ByVal states As List(Of String), ByVal initialProbabilities As Dictionary(Of String, Double)) As Boolean
+            If states.Count <> initialProbabilities.Count Then Return False
 
-			Return sum = 1.0
-		End Function
+            For i As Integer = 0 To states.Count - 1
+                Dim found As Boolean = False
+                For Each state As String In initialProbabilities.Keys
+                    If state.Equals(states(i)) Then
+                        found = True
+                        Exit For
+                    End If
+                Next
 
-		Public Overridable Function isValidInitialProbabilities(ByVal states As List(Of String), ByVal initialProbabilities As Dictionary(Of String, Double)) As Boolean
-			If states.Count <> initialProbabilities.Count Then Return False
+                If Not found Then Return False
+            Next
 
-			For i As Integer = 0 To states.Count - 1
-				Dim found As Boolean = False
-				For Each state As String In initialProbabilities.Keys
-					If state.Equals(states(i)) Then
-						found = True
-						Exit For
-					End If
-				Next
+            Return True
+        End Function
 
-				If Not found Then Return False
-			Next
-
-			Return True
-		End Function
-
-        Public Overridable Function isValidTransitionMatrix(ByVal transitionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), ByVal states As List(Of String)) As Boolean
+        Public Function isValidTransitionMatrix(ByVal transitionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), ByVal states As List(Of String)) As Boolean
             If transitionMatrix.Count <> states.Count * states.Count Then Return False
 
             Dim frequency As New Dictionary(Of KeyValuePair(Of String, String), Boolean?)
@@ -77,7 +67,7 @@ Namespace Util.Validation
             Return True
         End Function
 
-        Public Overridable Function isValidEmissionMatrix(ByVal emissionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), ByVal states As List(Of String), ByVal observations As List(Of String)) As Boolean
+        Public Function isValidEmissionMatrix(ByVal emissionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), ByVal states As List(Of String), ByVal observations As List(Of String)) As Boolean
             If emissionMatrix.Count <> observations.Count * states.Count Then Return False
 
             For Each item As KeyValuePair(Of String, String) In emissionMatrix.Keys
@@ -105,10 +95,10 @@ Namespace Util.Validation
                 Next
 
                 If sum <> 1.0 AndAlso count > 0 Then Return False
-			Next
+            Next
 
-			Return True
-		End Function
-	End Class
+            Return True
+        End Function
+    End Module
 
 End Namespace
