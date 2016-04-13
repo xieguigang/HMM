@@ -46,7 +46,7 @@ Public Class HiddenMarkovModel
     End Function
 
     ''' 
-    ''' <param name="states"> A Vector<String> that is the states of the model </param>
+    ''' <param name="states"> A Vector of <see cref="String"/> that is the states of the model </param>
     ''' <param name="initialProbabilities"> A hashtable that is the initial probability vector of the states </param>
     ''' <returns> [True/False] which specifies if the sizes are matched or not </returns>
 

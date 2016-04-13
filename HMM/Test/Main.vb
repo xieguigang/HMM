@@ -1,7 +1,8 @@
+Imports HMM
 Imports Microsoft.VisualBasic
 
-Friend Class Main
-    Public Sub Test()
+Public Module Main
+    Public Sub Main()
         Dim jp As Util.Parser.JsonParser = Util.Parser.JsonParser.LoadJson("G:\Github Repositories\Hidden-Markov-Model\Resources\test_HMM.json")
         Dim name As String = DataDecoding.getModelName(jp.modelInfo.name)
         Dim states As List(Of String) = DataDecoding.getStates(jp.modelData.states)
@@ -57,5 +58,4 @@ Friend Class Main
         Console.WriteLine(hmm.evaluateUsingForwardAlgorithm(sampleStates, sampleO))
 
     End Sub
-
-End Class
+End Module
