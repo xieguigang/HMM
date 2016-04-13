@@ -1,7 +1,15 @@
-Imports System
+﻿Imports System
 Imports Microsoft.VisualBasic.DataMining.HMM.Model
 Imports Microsoft.VisualBasic
 
+''' <summary>
+''' 令 λ = {A,B,π} 为给定HMM的参数，
+''' 令 σ = O1,..., OT 为观察值序列，
+''' 隐马尔可夫模型（HMM）的三个基本问题 
+''' 评估问题： 对于给定模型， 求某个观察值序列的概率p(σ|λ) ；forward algorithm
+''' 解码问题： 对于给定模型和观察值序列， 求可能性最大的状态序列；viterbi algorithm
+''' 学习问题： 对于给定的一个观察值序列， 调整参数λ， 使得观察值出现的概率p(σ|λ)最大。Forward-backward algorithm
+''' </summary>
 Public Class HiddenMarkovModel
 
     ''' <summary>
@@ -179,11 +187,17 @@ Public Class HiddenMarkovModel
     End Function
 
     ''' <summary>
-    ''' Calculate the probability to obtain this sequence of states and observations which is the Evaluation of the model </summary>
+    ''' Calculate the probability to obtain this sequence of states and observations which is the Evaluation of the model.
+    ''' (学习问题：对于给定的一个观察值序列，调整参数λ，使得观察值出现的概率p(σ|λ)最大。Forward-backward algorithm)
+    ''' </summary>
     ''' <param name="states"> A Vector which is the sequence of model states </param>
     ''' <param name="observations"> A Vector which is the sequence of the model observations </param>
     ''' <returns> A Double The probability to get this sequence of states and observations </returns>
     ''' <exception cref="Exception"> The sizes of states and observations sequences must be the same. </exception>
+    ''' <remarks>
+    ''' Learning problem：forward-backward algorithm
+    ''' EM算法的一个特例，带隐变量的最大似然估计
+    ''' </remarks>
     Public Function evaluateUsingForward_Backward(states As List(Of String), observations As List(Of String)) As List(Of Double)
         Dim resultsVector As New List(Of Double)
 
@@ -204,10 +218,18 @@ Public Class HiddenMarkovModel
     End Function
 
     ''' <summary>
-    ''' Calculate the forward probabilities Alpha as a part of Forward-Backward algorithm https://en.wikipedia.org/wiki/Forward%E2%80%93backward_algorithm </summary>
+    ''' Calculate the forward probabilities Alpha as a part of Forward-Backward algorithm https://en.wikipedia.org/wiki/Forward%E2%80%93backward_algorithm.
+    ''' (评估问题：对于给定模型，求某个观察值序列的概率p(σ|λ); forward algorithm)
+    ''' </summary>
     ''' <param name="states"> A Vector that is the model states </param>
     ''' <param name="observations"> A Vector that represents the observations sequence </param>
     ''' <returns> A Vector which contains the alpha values </returns>
+    ''' <remarks>
+    ''' 
+    ''' Evaluation problem：forward algorithm
+    ''' 定义向前变量
+    ''' 采用动态规划算法，复杂度O(N2T)
+    ''' </remarks>
     Public Function calculateForwardProbabilities(states As List(Of String), observations As List(Of String)) As List(Of Dictionary(Of String, Double))
         Me.Alpha.Add(New Dictionary(Of String, Double))
         For i As Integer = 0 To states.Count - 1
@@ -256,10 +278,17 @@ Public Class HiddenMarkovModel
     End Function
 
     ''' <summary>
-    ''' Get the most optimal path for states to emit the given observations </summary>
+    ''' Get the most optimal path for states to emit the given observations, given the model and the observations, 
+    ''' find the most likely state transition trajectory.
+    ''' (解码问题：对于给定模型和观察值序列，求可能性最大的状态序列；viterbi algorithm)
+    ''' </summary>
     ''' <param name="states"> A Vector which is the model states </param>
     ''' <param name="observations"> A Vector which represents the observations </param>
     ''' <returns> A String which holds the optimal path and the total cost </returns>
+    ''' <remarks>
+    ''' Decoding problem：Viterbi algorithm
+    ''' 采用动态规划算法，复杂度O(N2T)
+    ''' </remarks>
     Public Function getOptimalStateSequenceUsingViterbiAlgorithm(states As List(Of String), observations As List(Of String)) As String
         Dim path As String = ""
         Dim dpTable As New List(Of Dictionary(Of String, Double))
