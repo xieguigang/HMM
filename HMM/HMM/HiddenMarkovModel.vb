@@ -10,23 +10,28 @@ Public Class HiddenMarkovModel
     ''' <param name="initialProbabilities"> A Hashtable that is the initial probability vector of the states </param>
     ''' <param name="transitionMatrix"> A Hashtable the transition matrix between the states </param>
     ''' <param name="emissionMatrix"> A Hashtable that is the emission matrix between the states and the observations </param>
+    Public Sub New(name As String,
+                   states As List(Of String),
+                   observations As List(Of String),
+                   initialProbabilities As Dictionary(Of String, Double),
+                   transitionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double),
+                   emissionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double))
 
-    Public Sub New(name As String, states As List(Of String), observations As List(Of String), initialProbabilities As Dictionary(Of String, Double), transitionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), emissionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double))
         Me.Name = name
         Me.States = states
         Me.NumberOfStates = states.Count
         Me.Observations = observations
         Me.NumberOfObservations = observations.Count
-
         Me.InitialProbabilities = initialProbabilities
-        If Not Me.validateInitialProbability(initialProbabilities) Then Throw New Exception("Initial Probabilities sum must be equal 1.0")
-        If Not Me.validateInitialProbabilitiesAndStates(states, initialProbabilities) Then Throw New Exception("States size and Initial Probabilities size must be equal")
+
+        Call VBDebugger.Assertion(Me.validateInitialProbability(initialProbabilities), "Initial Probabilities sum must be equal 1.0")
+        Call VBDebugger.Assertion(Me.validateInitialProbabilitiesAndStates(states, initialProbabilities), "States size and Initial Probabilities size must be equal")
 
         Me.TransitionMatrix = transitionMatrix
-        If Not Me.validateTransitionMatrix(transitionMatrix, states) Then Throw New Exception("Check the transition matrix elements")
+        Call VBDebugger.Assertion(Me.validateTransitionMatrix(transitionMatrix, states), "Check the transition matrix elements")
 
         Me.EmissionMatrix = emissionMatrix
-        If Not Me.validateEmissionMatrix(emissionMatrix, states, observations) Then Throw New Exception("Check the emission matrix elements")
+        Call VBDebugger.Assertion(Me.validateEmissionMatrix(emissionMatrix, states, observations), "Check the emission matrix elements")
 
         Me.Alpha = New List(Of Dictionary(Of String, Double))
         Me.Beta = New List(Of Dictionary(Of String, Double))
