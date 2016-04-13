@@ -40,7 +40,6 @@ Public Class HiddenMarkovModel
     ''' 
     ''' <param name="initialProbabilities"> A hashtable that is the initial probability vector of the states </param>
     ''' <returns> [True/False] which specifies if the vector elements are logically right or not </returns>
-
     Private Function validateInitialProbability(initialProbabilities As Dictionary(Of String, Double)) As Boolean
         Return Util.Validation.Validator.summationIsOne(initialProbabilities)
     End Function
@@ -49,7 +48,6 @@ Public Class HiddenMarkovModel
     ''' <param name="states"> A Vector of <see cref="String"/> that is the states of the model </param>
     ''' <param name="initialProbabilities"> A hashtable that is the initial probability vector of the states </param>
     ''' <returns> [True/False] which specifies if the sizes are matched or not </returns>
-
     Private Function validateInitialProbabilitiesAndStates(states As List(Of String), initialProbabilities As Dictionary(Of String, Double)) As Boolean
         Return Util.Validation.Validator.isValidInitialProbabilities(states, initialProbabilities)
     End Function
@@ -58,7 +56,6 @@ Public Class HiddenMarkovModel
     ''' <param name="transitionMatrix"> A Hashtable that is the transition matrix between the states </param>
     ''' <param name="states"> A Vector that is the states of the model </param>
     ''' <returns> [True/False] which specifies if the matrix elements are logically right or not </returns>
-
     Private Function validateTransitionMatrix(transitionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), states As List(Of String)) As Boolean
         Return Util.Validation.Validator.isValidTransitionMatrix(transitionMatrix, states)
     End Function
@@ -68,7 +65,6 @@ Public Class HiddenMarkovModel
     ''' <param name="states"> A Vector that is the states of the model </param>
     ''' <param name="observations"> A Vector that is the model observations </param>
     ''' <returns> [True/False] True/False which specifies if the matrix elements are logically right or not </returns>
-
     Private Function validateEmissionMatrix(emissionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), states As List(Of String), observations As List(Of String)) As Boolean
         Return Util.Validation.Validator.isValidEmissionMatrix(emissionMatrix, states, observations)
     End Function
@@ -81,19 +77,16 @@ Public Class HiddenMarkovModel
     ''' <summary>
     ''' Get the number of states in the model </summary>
     ''' <returns> An integer that specifies the number of states in the model </returns>
-
     Public Property NumberOfStates As Integer
 
     ''' <summary>
     ''' Get the model states </summary>
     ''' <returns> A Vector which is the states of the model </returns>
-
     Public ReadOnly Property States As List(Of String)
 
     ''' <summary>
     ''' Get the number of observations in the model </summary>
     ''' <returns> An integer that specifies the number of observations in the model </returns>
-
     Public Property NumberOfObservations As Integer
 
     ''' <summary>
@@ -104,26 +97,22 @@ Public Class HiddenMarkovModel
     ''' <summary>
     ''' Get the initial probability vector of the states </summary>
     ''' <returns> Hashtable that is the initial probability vector of the states </returns>
-
     Public Property InitialProbabilities As Dictionary(Of String, Double)
 
     ''' <summary>
     ''' Get the transition matrix between the states </summary>
     ''' <returns> Hashtable that is the transition matrix between the states </returns>
-
     Public Property TransitionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double)
 
     ''' <summary>
     ''' Get the emission matrix between the states and the observations </summary>
     ''' <returns> Hashtable that is the emission matrix between the states and the observations </returns>
-
     Public Property EmissionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double)
 
     ''' 
     ''' <param name="firstState"> A string that is a state in the model </param>
     ''' <param name="secondState"> A string that is a state in the model </param>
     ''' <returns> A Double that is the transition value between the 2 states </returns>
-
     Public Function getTransitionValue(firstState As String, secondState As String) As Double
         Return Me.TransitionMatrix(New KeyValuePair(Of String, String)(firstState, secondState))
     End Function
@@ -132,7 +121,6 @@ Public Class HiddenMarkovModel
     ''' <param name="state"> A string that is a state in the model </param>
     ''' <param name="observation"> A string that is an observation in the model </param>
     ''' <returns> A Double that is the value of the emission between the state and the observation </returns>
-
     Public Function getEmissionValue(state As String, observation As String) As Double
         Return Me.EmissionMatrix(New KeyValuePair(Of String, String)(state, observation))
     End Function
@@ -140,7 +128,6 @@ Public Class HiddenMarkovModel
     ''' 
     ''' <param name="state"> A string that is a state in the model </param>
     ''' <returns> A Double that is the initial probability value of the state </returns>
-
     Public Function getInitialProbability(state As String) As Double
         Return Me.InitialProbabilities(state)
     End Function
@@ -148,13 +135,11 @@ Public Class HiddenMarkovModel
     ''' <summary>
     ''' Get the Alpha values which is obtained from the forward function </summary>
     ''' <returns> A Hashtable which represents the Alpha values </returns>
-
     Public ReadOnly Property Alpha As List(Of Dictionary(Of String, Double))
 
     ''' <summary>
     ''' Get the Beta values which is obtained from the backward function </summary>
     ''' <returns> A Hashtable which represents the Beta values </returns>
-
     Public ReadOnly Property Beta As List(Of Dictionary(Of String, Double))
 
     ''' <summary>
@@ -163,7 +148,6 @@ Public Class HiddenMarkovModel
     ''' <param name="observations"> A Vector which is the sequence of the model observations </param>
     ''' <returns> A Double The probability to get this sequence of states and observations </returns>
     ''' <exception cref="Exception"> The sizes of states and observations sequences must be the same. </exception>
-
     Public Function evaluateUsingBruteForce(states As List(Of String), observations As List(Of String)) As Double
         If states.Count <> observations.Count Then Throw New Exception("States and Observations must be at a same size!")
 
@@ -206,14 +190,11 @@ Public Class HiddenMarkovModel
     ''' <param name="observations"> A Vector which is the sequence of the model observations </param>
     ''' <returns> A Double The probability to get this sequence of states and observations </returns>
     ''' <exception cref="Exception"> The sizes of states and observations sequences must be the same. </exception>
-
     Public Function evaluateUsingForward_Backward(states As List(Of String), observations As List(Of String)) As List(Of Double)
         Dim resultsVector As New List(Of Double)
 
         Me._Alpha = Me.calculateForwardProbabilities(states, observations)
-        'alpha = StatisticalOperations.getInstance().normalize(alpha, states); // Normalization
         Me._Beta = Me.calculateBackwardProbabilities(states, observations)
-        ' beta = StatisticalOperations.getInstance().normalize(beta, states); // Normalization
 
         For t As Integer = 0 To states.Count - 1
             Dim result As Double = 1.0
@@ -233,7 +214,6 @@ Public Class HiddenMarkovModel
     ''' <param name="states"> A Vector that is the model states </param>
     ''' <param name="observations"> A Vector that represents the observations sequence </param>
     ''' <returns> A Vector which contains the alpha values </returns>
-
     Public Function calculateForwardProbabilities(states As List(Of String), observations As List(Of String)) As List(Of Dictionary(Of String, Double))
         Me.Alpha.Add(New Dictionary(Of String, Double))
         For i As Integer = 0 To states.Count - 1
@@ -259,7 +239,6 @@ Public Class HiddenMarkovModel
     ''' <param name="states"> A Vector that is the model states </param>
     ''' <param name="observations"> A Vector that represents the observations sequence </param>
     ''' <returns> A Vector which contains the Beta values </returns>
-
     Private Function calculateBackwardProbabilities(states As List(Of String), observations As List(Of String)) As List(Of Dictionary(Of String, Double))
         Me._Beta = New List(Of Dictionary(Of String, Double))
         Me.Beta.Add(New Dictionary(Of String, Double))
@@ -287,7 +266,6 @@ Public Class HiddenMarkovModel
     ''' <param name="states"> A Vector which is the model states </param>
     ''' <param name="observations"> A Vector which represents the observations </param>
     ''' <returns> A String which holds the optimal path and the total cost </returns>
-
     Public Function getOptimalStateSequenceUsingViterbiAlgorithm(states As List(Of String), observations As List(Of String)) As String
         Dim path As String = ""
         Dim dpTable As New List(Of Dictionary(Of String, Double))
@@ -349,7 +327,6 @@ Public Class HiddenMarkovModel
     ''' <param name="states"> A Vector which is the model states </param>
     ''' <param name="observations"> A Vector which is the sequence of observations </param>
     ''' <param name="additiveSmoothing"> A boolean which indicates if the function will use the smoothing value or not to avoid zero values. </param>
-
     Public Sub estimateParametersUsingBaumWelchAlgorithm(states As List(Of String), observations As List(Of String), additiveSmoothing As Boolean)
         Dim smoothing As Double = If(additiveSmoothing, 1.0, 0.0)
         Me._Alpha = Me.calculateForwardProbabilities(states, observations)

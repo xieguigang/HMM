@@ -30,10 +30,6 @@ Public Class HMM_For_Testing
         If Not Me.validateEmissionMatrix(emissionMatrix, states, observations) Then Throw New Exception("Check the emission matrix elements")
     End Sub
 
-    Public Sub New(filepath As String)
-
-    End Sub
-
     ''' 
     ''' <param name="initialProbabilities"> A hashtable that is the initial probability vector of the states </param>
     ''' <returns> [True/False] which specifies if the vector elements are logically right or not </returns>

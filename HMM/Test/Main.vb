@@ -1,9 +1,13 @@
 Imports HMM
 Imports Microsoft.VisualBasic
+Imports Microsoft.VisualBasic.Serialization
 
 Public Module Main
     Public Sub Main()
-        Dim jp As Util.Parser.JsonParser = Util.Parser.JsonParser.LoadJson("G:\Github Repositories\Hidden-Markov-Model\Resources\test_HMM.json")
+        Dim jp As Util.Parser.JsonParser = Util.Parser.JsonParser.LoadJson("F:\HMM\Resources\test_HMM.json")
+
+        Call jp.GetJson.SaveTo("F:\HMM\Resources\test_HMM.json")
+
         Dim name As String = DataDecoding.getModelName(jp.modelInfo.name)
         Dim states As List(Of String) = DataDecoding.getStates(jp.modelData.states)
         Dim observations As List(Of String) = DataDecoding.getObservations(jp.modelData.observations)
