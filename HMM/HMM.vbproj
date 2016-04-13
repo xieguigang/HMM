@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
     <MyType>Windows</MyType>
-    <RootNamespace>HMM</RootNamespace>
-    <AssemblyName>HMM</AssemblyName>
+    <RootNamespace>Microsoft.VisualBasic.DataMining.HMM</RootNamespace>
+    <AssemblyName>Microsoft.VisualBasic.DataMining.HMM</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>

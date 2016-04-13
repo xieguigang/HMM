@@ -1,6 +1,6 @@
-Imports Microsoft.VisualBasic
 Imports System
-Imports HMM.Model
+Imports Microsoft.VisualBasic.DataMining.HMM.Model
+Imports Microsoft.VisualBasic
 
 Public Class HiddenMarkovModel
 
