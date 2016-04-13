@@ -6,8 +6,8 @@ Namespace Util.Parser
 
     Public Structure modelInfo
         Public Property name As String
-        Public Property created_at As String
-        Public Property [for] As String
+        Public Property [date] As String
+        Public Property title As String
 
         Public Overrides Function ToString() As String
             Return Me.GetJson
@@ -15,11 +15,11 @@ Namespace Util.Parser
     End Structure
 
     Public Structure modelData
-        Public Property states As String
-        Public Property initial_prop As String
-        Public Property observations As String
-        Public Property transition_matrix As String
-        Public Property emission_matrix As String
+        Public Property states As String()
+        Public Property init_props As Dictionary(Of String, Double)
+        Public Property observations As String()
+        Public Property transitions As String()
+        Public Property emissions As String()
 
         Public Overrides Function ToString() As String
             Return Me.GetJson
