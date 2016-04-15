@@ -1,4 +1,6 @@
 Imports System.Collections.Generic
+Imports System.Linq
+Imports System.Runtime.CompilerServices
 
 Namespace Model
 
@@ -35,24 +37,24 @@ Namespace Model
             Return True
         End Function
 
-        Public Function isValidTransitionMatrix(transitionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), states As List(Of String)) As Boolean
+        Public Function isValidTransitionMatrix(transitionMatrix As Dictionary(Of String, Double), states As List(Of String)) As Boolean
             If transitionMatrix.Count <> states.Count * states.Count Then Return False
 
-            Dim frequency As New Dictionary(Of KeyValuePair(Of String, String), Boolean?)
+            Dim frequency As New Dictionary(Of String, Boolean?)
 
-            For Each item As KeyValuePair(Of String, String) In transitionMatrix.Keys
+            For Each item As String In transitionMatrix.Keys
                 If frequency.ContainsKey(item) Then Return False
                 frequency(item) = True
             Next
 
-            Dim visited As New Dictionary(Of KeyValuePair(Of String, String), Boolean?)
+            Dim visited As New Dictionary(Of String, Boolean)
 
-            For Each first As KeyValuePair(Of String, String) In transitionMatrix.Keys
+            For Each first As String In transitionMatrix.Keys
                 Dim sum As Double = 0.0
                 Dim entered As Integer = 0
-                Dim state As String = first.Key
-                For Each second As KeyValuePair(Of String, String) In transitionMatrix.Keys
-                    If state.Equals(second.Key) AndAlso (Not visited.ContainsKey(second)) Then
+                Dim state As String = first.key
+                For Each second As String In transitionMatrix.Keys
+                    If state.Equals(second.key) AndAlso (Not visited.ContainsKey(second)) Then
                         sum += transitionMatrix(second)
                         entered += 1
                         visited(second) = True
@@ -65,16 +67,25 @@ Namespace Model
             Return True
         End Function
 
-        Public Function isValidEmissionMatrix(emissionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), states As List(Of String), observations As List(Of String)) As Boolean
+        <Extension>
+        Private Function key(state As String) As String
+            Return Strings.Split(state, " -> ").First
+        End Function
+
+        Public Function isValidEmissionMatrix(emissionMatrix As Dictionary(Of String, Double), states As List(Of String), observations As List(Of String)) As Boolean
             If emissionMatrix.Count <> observations.Count * states.Count Then Return False
 
-            For Each item As KeyValuePair(Of String, String) In emissionMatrix.Keys
+            Dim state As String
+
+            For Each item As String In emissionMatrix.Keys
                 Dim found As Boolean = False
                 Dim sum As Double = 0.0
                 Dim count As Integer = 0
                 For i As Integer = 0 To states.Count - 1
                     For j As Integer = 0 To observations.Count - 1
-                        If item.Key.Equals(states(i)) AndAlso item.Value.Equals(observations(j)) Then
+                        state = $"{states(i)} -> {observations(j)}"
+
+                        If String.Equals(item, state) Then
                             found = True
                             Exit For
                         End If
@@ -85,8 +96,8 @@ Namespace Model
 
                 If Not found Then Return False
 
-                For Each item2 As KeyValuePair(Of String, String) In emissionMatrix.Keys
-                    If item.Key.Equals(item2.Key) Then
+                For Each item2 As String In emissionMatrix.Keys
+                    If __keyEquals(item, item2) Then
                         sum += emissionMatrix(item2)
                         count += 1
                     End If
@@ -96,6 +107,10 @@ Namespace Model
             Next
 
             Return True
+        End Function
+
+        Private Function __keyEquals(k1 As String, k2 As String) As Boolean
+            Return String.Equals(Strings.Split(k1, " -> "), Strings.Split(k2, " -> "))
         End Function
     End Module
 End Namespace

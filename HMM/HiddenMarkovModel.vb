@@ -23,8 +23,8 @@ Public Class HiddenMarkovModel
                    states As List(Of String),
                    observations As List(Of String),
                    initialProbabilities As Dictionary(Of String, Double),
-                   transitionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double),
-                   emissionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double))
+                   transitionMatrix As Dictionary(Of String, Double),
+                   emissionMatrix As Dictionary(Of String, Double))
 
         Me.Name = name
         Me.States = states
@@ -65,7 +65,7 @@ Public Class HiddenMarkovModel
     ''' <param name="transitionMatrix"> A Hashtable that is the transition matrix between the states </param>
     ''' <param name="states"> A Vector that is the states of the model </param>
     ''' <returns> [True/False] which specifies if the matrix elements are logically right or not </returns>
-    Private Function validateTransitionMatrix(transitionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), states As List(Of String)) As Boolean
+    Private Function validateTransitionMatrix(transitionMatrix As Dictionary(Of String, Double), states As List(Of String)) As Boolean
         Return Validator.isValidTransitionMatrix(transitionMatrix, states)
     End Function
 
@@ -74,7 +74,7 @@ Public Class HiddenMarkovModel
     ''' <param name="states"> A Vector that is the states of the model </param>
     ''' <param name="observations"> A Vector that is the model observations </param>
     ''' <returns> [True/False] True/False which specifies if the matrix elements are logically right or not </returns>
-    Private Function validateEmissionMatrix(emissionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double), states As List(Of String), observations As List(Of String)) As Boolean
+    Private Function validateEmissionMatrix(emissionMatrix As Dictionary(Of String, Double), states As List(Of String), observations As List(Of String)) As Boolean
         Return Validator.isValidEmissionMatrix(emissionMatrix, states, observations)
     End Function
 
@@ -111,19 +111,19 @@ Public Class HiddenMarkovModel
     ''' <summary>
     ''' Get the transition matrix between the states </summary>
     ''' <returns> Hashtable that is the transition matrix between the states </returns>
-    Public Property TransitionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double)
+    Public Property TransitionMatrix As Dictionary(Of String, Double)
 
     ''' <summary>
     ''' Get the emission matrix between the states and the observations </summary>
     ''' <returns> Hashtable that is the emission matrix between the states and the observations </returns>
-    Public Property EmissionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double)
+    Public Property EmissionMatrix As Dictionary(Of String, Double)
 
     ''' 
     ''' <param name="firstState"> A string that is a state in the model </param>
     ''' <param name="secondState"> A string that is a state in the model </param>
     ''' <returns> A Double that is the transition value between the 2 states </returns>
     Public Function getTransitionValue(firstState As String, secondState As String) As Double
-        Return Me.TransitionMatrix(New KeyValuePair(Of String, String)(firstState, secondState))
+        Return Me.TransitionMatrix($"{firstState} -> {secondState}")
     End Function
 
     ''' 
@@ -131,17 +131,19 @@ Public Class HiddenMarkovModel
     ''' <param name="observation"> A string that is an observation in the model </param>
     ''' <returns> A Double that is the value of the emission between the state and the observation </returns>
     Public Function getEmissionValue(state As String, observation As String) As Double
-        Return Me.EmissionMatrix(New KeyValuePair(Of String, String)(state, observation))
+        Return Me.EmissionMatrix($"{state} -> {observation}")
     End Function
 
     ''' <summary>
     ''' Get the Alpha values which is obtained from the forward function </summary>
     ''' <returns> A Hashtable which represents the Alpha values </returns>
+    ''' <remarks>线程不安全</remarks>
     Public ReadOnly Property Alpha As List(Of Dictionary(Of String, Double))
 
     ''' <summary>
     ''' Get the Beta values which is obtained from the backward function </summary>
     ''' <returns> A Hashtable which represents the Beta values </returns>
+    ''' <remarks>线程不安全</remarks>
     Public ReadOnly Property Beta As List(Of Dictionary(Of String, Double))
 
     ''' <summary>
@@ -410,12 +412,12 @@ Public Class HiddenMarkovModel
                     Dim epsSum As Double = 0.0
                     For i As Integer = 0 To observations.Count - 2
                         epsSum += eps(i)(state)([to])
-                        Me.TransitionMatrix(New KeyValuePair(Of String, String)(state, [to])) = (smoothing + epsSum) / denominator
+                        Me.TransitionMatrix($"{state} -> {[to]}") = (smoothing + epsSum) / denominator
                     Next
                 Next
             Else
                 For Each [to] As String In states
-                    Me.TransitionMatrix(New KeyValuePair(Of String, String)(state, [to])) = 0.0
+                    Me.TransitionMatrix($"{state} -> {[to]}") = 0.0
                 Next
             End If
 
@@ -438,11 +440,11 @@ Public Class HiddenMarkovModel
             If gammaProbabilitySum > 0 Then
                 Dim denominator As Double = gammaProbabilitySum + smoothing * observations.Count
                 For Each observation As String In Me.Observations
-                    Me.EmissionMatrix(New KeyValuePair(Of String, String)(state, observation)) = (smoothing + emissionProbabilitySums(observation)) / denominator
+                    Me.EmissionMatrix($"{state} -> {observation}") = (smoothing + emissionProbabilitySums(observation)) / denominator
                 Next
             Else
                 For Each observation As String In Me.Observations
-                    Me.EmissionMatrix(New KeyValuePair(Of String, String)(state, observation)) = 0.0
+                    Me.EmissionMatrix($"{state} -> {observation}") = 0.0
                 Next
             End If
         Next

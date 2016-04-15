@@ -16,14 +16,18 @@ Namespace Model
         ''' <param name="json"> A string that hold the json expression of the model transition matrix </param>
         ''' <returns> A Hasshtable that is the transition matrix of the model </returns>
 
-        Public Function GetMatrix(json As String()) As Dictionary(Of KeyValuePair(Of String, String), Double)
-            Dim ___transitionMatrix As New Dictionary(Of KeyValuePair(Of String, String), Double)
+        Public Function GetMatrix(json As String()) As Dictionary(Of String, Double)
+            Dim ___transitionMatrix As New Dictionary(Of String, Double)
+            Dim state As String
+            Dim prob As Double
 
             For Each expression As String In json
                 Dim transitionExpression As String() = StringSplit(expression, INNER_SPLITTER, True)
 
                 For i As Integer = 0 To transitionExpression.Length - 1 Step 3
-                    ___transitionMatrix(New KeyValuePair(Of String, String)(transitionExpression(i), transitionExpression(i + 1))) = Convert.ToDouble(transitionExpression(i + 2))
+                    state = $"{transitionExpression(i)} -> {transitionExpression(i + 1)}"
+                    prob = Convert.ToDouble(transitionExpression(i + 2))
+                    ___transitionMatrix(state) = prob
                 Next
             Next
 

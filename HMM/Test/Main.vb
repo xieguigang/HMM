@@ -1,7 +1,7 @@
 Imports System.Reflection
-Imports HMM
-Imports HMM.Model
 Imports Microsoft.VisualBasic
+Imports Microsoft.VisualBasic.DataMining.HMM
+Imports Microsoft.VisualBasic.DataMining.HMM.Model
 Imports Microsoft.VisualBasic.Serialization
 
 Public Module Main
@@ -31,8 +31,8 @@ Public Module Main
         Dim states As List(Of String) = New List(Of String)(jp.modelData.states)
         Dim observations As List(Of String) = New List(Of String)(jp.modelData.observations)
         Dim initialProbabilities As Dictionary(Of String, Double) = jp.modelData.init_props
-        Dim transitionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double) = DataDecoding.GetMatrix(jp.modelData.transitions)
-        Dim emissionMatrix As Dictionary(Of KeyValuePair(Of String, String), Double) = DataDecoding.GetMatrix(jp.modelData.emissions)
+        Dim transitionMatrix As Dictionary(Of String, Double) = DataDecoding.GetMatrix(jp.modelData.transitions)
+        Dim emissionMatrix As Dictionary(Of String, Double) = DataDecoding.GetMatrix(jp.modelData.emissions)
 
         Dim hmm As New HiddenMarkovModel(name, states, observations, initialProbabilities, transitionMatrix, emissionMatrix)
         Dim sampleStates = New List(Of String)
