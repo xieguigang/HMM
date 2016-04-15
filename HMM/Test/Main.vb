@@ -23,10 +23,7 @@ Public Module Main
     End Function
 
     Public Sub Main()
-        Dim jp As JsonHMM = TestData()
-
-        Call jp.GetJson.SaveTo("F:\HMM\Resources\test_HMM.json")
-
+        Dim jp As JsonHMM = "F:\HMM\Resources\test_HMM.json".ReadAllText.LoadObject(Of JsonHMM)
         Dim name As String = jp.modelInfo.name
         Dim states As List(Of String) = New List(Of String)(jp.modelData.states)
         Dim observations As List(Of String) = New List(Of String)(jp.modelData.observations)
