@@ -153,7 +153,7 @@ Public Class HiddenMarkovModel
     ''' <returns> A Double The probability to get this sequence of states and observations </returns>
     ''' <exception cref="Exception"> The sizes of states and observations sequences must be the same. </exception>
     Public Function evaluateUsingBruteForce(states As List(Of String), observations As List(Of String)) As Double
-        If states.Count <> observations.Count Then Throw New Exception("States and Observations must be at a same size!")
+        Call VBDebugger.Assertion(states.Count = observations.Count, "States and Observations must be at a same size!")
 
         Dim previousState As String = ""
         Dim probability As Double = 0.0
@@ -381,7 +381,11 @@ Public Class HiddenMarkovModel
             For Each fromState As String In states
                 eps(i)(fromState) = New Dictionary(Of String, Double)
                 For Each toState As String In states
-                    Dim tempProbability As Double = Me.Alpha(i)(fromState) * Me.Beta(i + 1)(toState) * Me.getTransitionValue(fromState, toState) * Me.getEmissionValue(toState, observations(i + 1))
+                    Dim tempProbability As Double =
+                        Me.Alpha(i)(fromState) *
+                        Me.Beta(i + 1)(toState) *
+                        Me.getTransitionValue(fromState, toState) *
+                        Me.getEmissionValue(toState, observations(i + 1))
 
                     eps(i)(fromState)(toState) = tempProbability
                     probabilitySum += tempProbability
