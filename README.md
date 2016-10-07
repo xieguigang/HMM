@@ -71,14 +71,14 @@ Dim hmm As New HiddenMarkovModel(name, states, observations, initialProbabilitie
 ```
 You can create the HMM constructor parameters using 2 ways
 + Put your model data in a json file, then read it like that
-```
-        Dim jp As JsonHMM = "F:\HMM\Resources\test_HMM.json".ReadAllText.LoadObject(Of JsonHMM)
-        Dim name As String = jp.modelInfo.name
-        Dim states As List(Of String) = New List(Of String)(jp.modelData.states)
-        Dim observations As List(Of String) = New List(Of String)(jp.modelData.observations)
-        Dim initialProbabilities As Dictionary(Of String, Double) = jp.modelData.init_props
-        Dim transitionMatrix As Dictionary(Of String, Double) = DataDecoding.GetMatrix(jp.modelData.transitions)
-        Dim emissionMatrix As Dictionary(Of String, Double) = DataDecoding.GetMatrix(jp.modelData.emissions)
+```vbnet
+Dim jp As JsonHMM = "F:\HMM\Resources\test_HMM.json".ReadAllText.LoadObject(Of JsonHMM)
+Dim name As String = jp.modelInfo.name
+Dim states As List(Of String) = New List(Of String)(jp.modelData.states)
+Dim observations As List(Of String) = New List(Of String)(jp.modelData.observations)
+Dim initialProbabilities As Dictionary(Of String, Double) = jp.modelData.init_props
+Dim transitionMatrix As Dictionary(Of String, Double) = DataDecoding.GetMatrix(jp.modelData.transitions)
+Dim emissionMatrix As Dictionary(Of String, Double) = DataDecoding.GetMatrix(jp.modelData.emissions)
 ```
 + Hard-code your parameters by setting the elements one by one for each parameter
 
