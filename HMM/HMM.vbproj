@@ -3,6 +3,13 @@
   <PropertyGroup>
     <RootNamespace>Microsoft.VisualBasic.DataMining.HMM</RootNamespace>
     <TargetFramework>net6.0</TargetFramework>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Test\**" />
+    <EmbeddedResource Remove="Test\**" />
+    <None Remove="Test\**" />
+  </ItemGroup>
 
 </Project>
