@@ -19,7 +19,7 @@ Module Module1
             Next
         Next
 
-        Dim talk As New Generator(New IntRange(3, 12), corpus)
+        Dim talk As New Generator(New IntRange(3, 60), corpus)
 
         For i As Integer = 0 To 20
             Call Console.WriteLine(talk.Generate)
