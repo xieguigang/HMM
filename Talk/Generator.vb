@@ -1,4 +1,5 @@
-﻿Imports Microsoft.VisualBasic.Linq
+﻿Imports Microsoft.VisualBasic.Data.Trinity.NLP
+Imports Microsoft.VisualBasic.Linq
 Imports rnd = Microsoft.VisualBasic.Math.RandomExtensions
 
 Public Class Generator
@@ -29,7 +30,7 @@ Public Class Generator
                     values(j) = words(j).num
                 Next
                 If values.Length <> 0 Then
-                    curWord = words(rouletteSelect(values)).s
+                    curWord = words(rouletteSelect(values)).str
                 Else
                     curWord = getRandomWord()
                 End If
@@ -74,7 +75,7 @@ Public Class Generator
                 w = pairs(previous)
                 Dim found = False
                 For j = 0 To w.Count - 1
-                    If w(j).s.Equals(words(i)) Then
+                    If w(j).str = words(i) Then
                         w(j).num += 1
                         found = True
                     End If
