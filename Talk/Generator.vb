@@ -1,18 +1,20 @@
-﻿Imports Microsoft.VisualBasic.Data.Trinity.NLP
+﻿Imports Microsoft.VisualBasic.ComponentModel.Ranges.Model
+Imports Microsoft.VisualBasic.Data.Trinity.NLP
 Imports Microsoft.VisualBasic.Linq
 Imports rnd = Microsoft.VisualBasic.Math.RandomExtensions
 
 Public Class Generator
 
-    Friend previous As String = ""
-    Friend curWord As String = ""
-    Friend numWordsMin As Integer = 2
-    Friend numWordsMax As Integer = 8
-    Public pairs As New Dictionary(Of String, List(Of Word))()
-    Public Sub New()
+    Dim previous, curWord As String
 
+    ReadOnly len As IntRange
+    ReadOnly pairs As New Dictionary(Of String, List(Of Word))()
+
+    Public Sub New(len As IntRange)
+        Me.len = len
     End Sub
-    Public Overridable Function generate([string] As String) As String
+
+    Public Function generate([string] As String) As String
         Dim generatedText = ""
         createTable([string])
         Dim numWords As Integer = randomizeNumWords()
@@ -47,7 +49,7 @@ Public Class Generator
         Return words(rnd.Next(words.Count))
     End Function
 
-    Public Overridable Function rouletteSelect(weight As Double()) As Integer
+    Public Function rouletteSelect(weight As Double()) As Integer
         Dim weight_sum As Double = 0
         For i = 0 To weight.Length - 1
             weight_sum += weight(i)
@@ -61,16 +63,18 @@ Public Class Generator
         Next
         Return weight.Length - 1
     End Function
-    Public Overridable Function randomizeNumWords() As Integer
-        Return rnd.Next(numWordsMax - numWordsMin + 1) + numWordsMin
+
+    Public Function randomizeNumWords() As Integer
+        Return rnd.Next(len.Max - len.Min + 1) + len.Min
     End Function
-    Public Overridable Sub createTable([string] As String)
+
+    Public Sub createTable([string] As String)
         Dim words = [string].Split(" "c)
         For i = 0 To words.Length - 1
             If Not pairs.ContainsKey(words(i)) Then
                 pairs(words(i)) = New List(Of Word)()
             End If
-            Dim w As List(Of Word) = New List(Of Word)()
+            Dim w As New List(Of Word)()
             If pairs.ContainsKey(previous) Then
                 w = pairs(previous)
                 Dim found = False
@@ -84,7 +88,7 @@ Public Class Generator
                     w.Add(New Word(words(i)))
                 End If
             End If
-            pairs.Remove(previous)
+
             pairs(previous) = w
             previous = words(i)
         Next
