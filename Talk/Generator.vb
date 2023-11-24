@@ -2,6 +2,7 @@
 Imports rnd = Microsoft.VisualBasic.Math.RandomExtensions
 
 Public Class Generator
+
     Friend previous As String = ""
     Friend curWord As String = ""
     Friend numWordsMin As Integer = 2
