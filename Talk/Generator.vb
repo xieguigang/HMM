@@ -3,8 +3,6 @@ Imports rnd = Microsoft.VisualBasic.Math.RandomExtensions
 
 Public Class Generator
 
-    Dim previous, curWord As String
-
     ReadOnly len As IntRange
     ReadOnly corpora As Corpora
 
@@ -13,58 +11,65 @@ Public Class Generator
         Me.corpora = corpora
     End Sub
 
-    Public Function Generate() As String
-        Dim generatedText = ""
+    ''' <summary>
+    ''' 
+    ''' </summary>
+    ''' <param name="start">the start word</param>
+    ''' <returns></returns>
+    Public Function Generate(Optional start As String = Nothing) As String
+        Dim generatedText As New List(Of String)
         Dim numWords As Integer = randomizeNumWords()
+        Dim curword As String
+
+        ' start word
+        If start.StringEmpty Then
+            curWord = getRandomWord()
+        Else
+            curWord = start
+        End If
+
+        Call generatedText.Add(curWord)
 
         For i As Integer = 0 To numWords - 1
-            If generatedText.StringEmpty Then
-                Dim keys As New List(Of String)(corpora.Keys)
+            Dim words = corpora.GetCorpusVertex(curWord)
+            Dim values = New Double(words.Count - 1) {}
 
-                curWord = keys(rnd.Next(keys.Count))
-                generatedText += curWord
+            For j As Integer = 0 To values.Length - 1
+                values(j) = words(j).num
+            Next
+
+            If values.Length <> 0 Then
+                curWord = words(rouletteSelect(values)).str
             Else
-                Dim words = pairs(curWord)
-                Dim values = New Double(words.Count - 1) {}
-
-                generatedText += " "
-
-                For j As Integer = 0 To values.Length - 1
-                    values(j) = words(j).num
-                Next
-
-                If values.Length <> 0 Then
-                    curWord = words(rouletteSelect(values)).str
-                Else
-                    curWord = getRandomWord()
-                End If
-
-                generatedText += curWord
+                curWord = getRandomWord()
             End If
+
+            generatedText.Add(curWord)
         Next
 
-        Return generatedText
+        Return generatedText.JoinBy(" ")
     End Function
 
     Private Function getRandomWord() As String
-        Dim keys = pairs.Keys.ToArray
+        Dim keys = corpora.Keys.ToArray
         Dim rndkey = keys(rnd.Next(keys.Length))
-        Dim words = pairs(rndkey)
+        Dim words = corpora.GetCorpusVertex(rndkey)
+
         Return words(rnd.Next(words.Count))
     End Function
 
     Public Function rouletteSelect(weight As Double()) As Integer
-        Dim weight_sum As Double = 0
-        For i = 0 To weight.Length - 1
-            weight_sum += weight(i)
-        Next
+        Dim weight_sum As Double = weight.Sum
         Dim value As Double = rnd.NextDouble() * weight_sum
-        For i = 0 To weight.Length - 1
+
+        For i As Integer = 0 To weight.Length - 1
             value -= weight(i)
+
             If value <= 0 Then
                 Return i
             End If
         Next
+
         Return weight.Length - 1
     End Function
 
