@@ -52,8 +52,13 @@ Public Class Generator
 
     Private Function getRandomWord() As String
         Dim keys = corpora.Keys.ToArray
+re0:
         Dim rndkey = keys(rnd.Next(keys.Length))
         Dim words = corpora.GetCorpusVertex(rndkey)
+
+        If words.Count = 0 Then
+            GoTo re0
+        End If
 
         Return words(rnd.Next(words.Count))
     End Function

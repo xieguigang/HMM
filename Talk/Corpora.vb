@@ -28,6 +28,10 @@ Public Class Corpora
         For i As Integer = 0 To words.Length - 1
             key = words(i).ToLower
 
+            If key.StringEmpty Then
+                Continue For
+            End If
+
             If Not graph.ContainsKey(key) Then
                 graph(key) = New WordIndex
             End If

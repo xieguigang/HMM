@@ -24,6 +24,9 @@ Public Module Main
     End Function
 
     Public Sub Main()
+        Call Module1.Main2()
+
+
         Dim jp As JsonHMM = "F:\HMM\Resources\test_HMM.json".ReadAllText.LoadJSON(Of JsonHMM)
         Dim name As String = jp.modelInfo.name
         Dim states As List(Of String) = New List(Of String)(jp.modelData.states)
