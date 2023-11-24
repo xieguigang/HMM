@@ -3,6 +3,7 @@ Imports Microsoft.VisualBasic
 Imports Microsoft.VisualBasic.DataMining.HMM
 Imports Microsoft.VisualBasic.DataMining.HMM.Model
 Imports Microsoft.VisualBasic.Serialization
+Imports Microsoft.VisualBasic.Serialization.JSON
 
 Public Module Main
 
@@ -23,7 +24,7 @@ Public Module Main
     End Function
 
     Public Sub Main()
-        Dim jp As JsonHMM = "F:\HMM\Resources\test_HMM.json".ReadAllText.LoadObject(Of JsonHMM)
+        Dim jp As JsonHMM = "F:\HMM\Resources\test_HMM.json".ReadAllText.LoadJSON(Of JsonHMM)
         Dim name As String = jp.modelInfo.name
         Dim states As List(Of String) = New List(Of String)(jp.modelData.states)
         Dim observations As List(Of String) = New List(Of String)(jp.modelData.observations)

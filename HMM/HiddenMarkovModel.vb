@@ -1,6 +1,5 @@
-﻿Imports System
-Imports Microsoft.VisualBasic.DataMining.HMM.Model
-Imports Microsoft.VisualBasic
+﻿Imports Microsoft.VisualBasic.DataMining.HMM.Model
+Imports std = System.Math
 
 ''' <summary>
 ''' 令 λ = {A,B,π} 为给定HMM的参数，
@@ -302,7 +301,7 @@ Public Class HiddenMarkovModel
                 For Each state As String In states
                     Dim ___initialProbability As Double = Me._InitialProbabilities(state)
                     Dim emissionProbability As Double = Me.getEmissionValue(state, observations(i))
-                    statesProbabilities(state) = Math.Log(___initialProbability) + Math.Log(emissionProbability)
+                    statesProbabilities(state) = std.Log(___initialProbability) + std.Log(emissionProbability)
                 Next
             Else
                 For Each state As String In states
@@ -311,7 +310,7 @@ Public Class HiddenMarkovModel
 
                     For Each prevState As String In priorProbabilities.Keys
                         Dim transitionProbability As Double = Me.getTransitionValue(prevState, state)
-                        Dim accumulate As Double = priorProbabilities(prevState) + Math.Log(emissionProbability) + Math.Log(transitionProbability)
+                        Dim accumulate As Double = priorProbabilities(prevState) + std.Log(emissionProbability) + std.Log(transitionProbability)
 
                         If accumulate > bestProbability Then bestProbability = accumulate
                     Next
@@ -319,8 +318,8 @@ Public Class HiddenMarkovModel
                 Next
             End If
 
-            dpTable.Add(CType(statesProbabilities.Clone(), Dictionary(Of String, Double)))
-            priorProbabilities = CType(statesProbabilities.Clone(), Dictionary(Of String, Double))
+            dpTable.Add(New Dictionary(Of String, Double)(statesProbabilities))
+            priorProbabilities = New Dictionary(Of String, Double)(statesProbabilities)
         Next
 
         Dim lastColumn As Dictionary(Of String, Double) = dpTable(dpTable.Count - 1)
