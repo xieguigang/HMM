@@ -1,4 +1,5 @@
 ﻿Imports System.Runtime.CompilerServices
+Imports Microsoft.VisualBasic.Data.NLP.Model
 Imports Microsoft.VisualBasic.Data.Trinity.NLP
 Imports Microsoft.VisualBasic.Serialization.JSON
 
@@ -21,7 +22,7 @@ Public Class Corpora
     End Function
 
     Public Sub MakeCorpus(text As String)
-        Dim words = text.Split(" "c)
+        Dim words = New SentenceCharWalker(text).GetTokens.ToArray
         Dim key As String
         Dim previous As String = ""
 
