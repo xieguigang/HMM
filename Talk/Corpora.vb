@@ -1,6 +1,7 @@
 ﻿Imports System.Runtime.CompilerServices
 Imports Microsoft.VisualBasic.Data.NLP.Model
 Imports Microsoft.VisualBasic.Data.Trinity.NLP
+Imports Microsoft.VisualBasic.Linq
 Imports Microsoft.VisualBasic.Serialization.JSON
 
 Public Class Corpora
@@ -22,22 +23,27 @@ Public Class Corpora
     End Function
 
     Public Sub MakeCorpus(text As String)
-        Dim words = New SentenceCharWalker(text).GetTokens.ToArray
-        Dim key As String
-        Dim previous As String = ""
+        For Each sent In Paragraph.Segmentation(text) _
+            .Select(Function(par) par.sentences) _
+            .IteratesALL
 
-        For i As Integer = 0 To words.Length - 1
-            key = words(i).ToLower
+            Dim words As String() = sent.words.Select(Function(wi) wi.str).ToArray
+            Dim key As String
+            Dim previous As String = ""
 
-            If key.StringEmpty Then
-                Continue For
-            End If
+            For i As Integer = 0 To words.Length - 1
+                key = words(i).ToLower
 
-            If Not graph.ContainsKey(key) Then
-                graph(key) = New WordIndex
-            End If
+                If key.StringEmpty Then
+                    Continue For
+                End If
 
-            Call joinLink(previous, current:=key)
+                If Not graph.ContainsKey(key) Then
+                    graph(key) = New WordIndex
+                End If
+
+                Call joinLink(previous, current:=key)
+            Next
         Next
     End Sub
 
