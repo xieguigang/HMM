@@ -45,37 +45,30 @@ Public Module Llama2
         Console.WriteLine("  -i <string> input prompt")
     End Sub
 
-    Public Sub Main(args As String())
-        Dim argc = args.Length
-        Dim checkpoint As String = Nothing
-        Dim temperature = 1.0F ' 0.0 = greedy deterministic. 1.0 = original. don't set higher
-        Dim topp = 0.9F ' top-p in nucleus sampling
-        SetSeed(CUInt(Date.UtcNow.Ticks))
-        Dim steps = 256 ' number of steps to run for
-        Dim prompt As String = Nothing ' prompt string
+    Sub Main()
+        Call SetSeed(CUInt(Date.UtcNow.Ticks))
+    End Sub
 
-        If argc >= 1 Then
-            checkpoint = args(0)
-        Else
-            Call ErrorUsage()
-            Return
+    ''' <summary>
+    ''' 
+    ''' </summary>
+    ''' <param name="temperature">0.0 = greedy deterministic. 1.0 = original. don't set higher; -t &lt;float>  temperature, default 1.0</param>
+    ''' <param name="topp">top-p in nucleus sampling; -p &lt;float>  p value in top-p (nucleus) sampling. default 0.9, 0 = off</param>
+    ''' <param name="steps">number of steps to run for; -n &lt;int>    number of steps to run for, default 256. 0 = max_seq_len</param>
+    ''' <param name="prompt">prompt string; -i &lt;string> input prompt</param>
+    ''' <param name="tokenizer">"tokenizer.bin"</param>
+    ''' <param name="seed">-s &lt;int>    random seed, default time(NULL)</param>
+    Public Sub Run(checkpoint As String,
+                   Optional prompt As String = Nothing,
+                   Optional steps As Integer = 256,
+                   Optional temperature As Single = 1.0F,
+                   Optional topp As Single = 0.9F,
+                   Optional seed As Integer? = Nothing,
+                   Optional tokenizer As String = Nothing)
+
+        If Not seed Is Nothing Then
+            _rngSeed = seed
         End If
-
-        For i = 1 To argc - 1 Step 2
-            If args(i)(1) = "t"c Then
-                temperature = Single.Parse(args(i + 1))
-            ElseIf args(i)(1) = "p"c Then
-                topp = Single.Parse(args(i + 1))
-            ElseIf args(i)(1) = "s"c Then
-                _rngSeed = Integer.Parse(args(i + 1))
-            ElseIf args(i)(1) = "n"c Then
-                steps = Integer.Parse(args(i + 1))
-            ElseIf args(i)(1) = "i"c Then
-                prompt = args(i + 1)
-            Else
-                Call ErrorUsage()
-            End If
-        Next
 
         If _rngSeed = 0 Then
             Console.WriteLine("Cannot use seed=0 because of the rng alg used" & vbLf)
@@ -130,7 +123,7 @@ Public Module Llama2
         Dim vocabScores = New Single(config.vocab_size - 1) {}
         Dim maxTokenLength As Integer
 
-        Using fs As FileStream = New FileStream("tokenizer.bin", FileMode.Open, FileAccess.Read)
+        Using fs As FileStream = New FileStream(tokenizer, FileMode.Open, FileAccess.Read)
             Using reader As BinaryReader = New BinaryReader(fs)
                 Try
                     maxTokenLength = reader.ReadInt32()
