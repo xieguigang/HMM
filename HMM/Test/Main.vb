@@ -24,6 +24,7 @@ Public Module Main
     End Function
 
     Public Sub Main()
+        Call Llamatest.Main2()
         Call Module1.Main2()
 
 
