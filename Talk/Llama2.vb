@@ -45,7 +45,7 @@ Public Module Llama2
         Console.WriteLine("  -i <string> input prompt")
     End Sub
 
-    Sub Main()
+    Sub New()
         Call SetSeed(CUInt(Date.UtcNow.Ticks))
     End Sub
 
