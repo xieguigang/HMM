@@ -1,8 +1,6 @@
 Imports System.Reflection
-Imports Microsoft.VisualBasic
 Imports Microsoft.VisualBasic.DataMining.HMM
 Imports Microsoft.VisualBasic.DataMining.HMM.Model
-Imports Microsoft.VisualBasic.Serialization
 Imports Microsoft.VisualBasic.Serialization.JSON
 
 Public Module Main

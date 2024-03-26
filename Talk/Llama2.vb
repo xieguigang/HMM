@@ -1,5 +1,4 @@
-﻿Imports System.Diagnostics
-Imports System.Diagnostics.CodeAnalysis
+﻿Imports System.Diagnostics.CodeAnalysis
 Imports System.IO
 Imports System.IO.MemoryMappedFiles
 Imports System.Runtime.InteropServices
@@ -27,23 +26,21 @@ Imports System.Text
 'OUT OF Or IN CONNECTION WITH THE SOFTWARE Or THE USE Or OTHER DEALINGS IN THE
 'SOFTWARE.
 
+' Usage:   run <checkpoint> [options]
+' Example: run model.bin -n 256 -i "Once upon a time"
+' Options:
+'   -t <float>  temperature, default 1.0
+'   -p <float>  p value in top-p (nucleus) sampling. default 0.9, 0 = off
+'   -s <int>    random seed, default time(NULL)
+'   -n <int>    number of steps to run for, default 256. 0 = max_seq_len
+'   -i <string> input prompt
+
 ''' <summary>
 ''' 
 ''' </summary>
-<SuppressMessage("ReSharper", "StackAllocInsideLoop")>
 Public Module Llama2
-    Private _rngSeed As Long
 
-    Private Sub ErrorUsage()
-        Console.WriteLine("Usage:   run <checkpoint> [options]")
-        Console.WriteLine("Example: run model.bin -n 256 -i ""Once upon a time""")
-        Console.WriteLine("Options:")
-        Console.WriteLine("  -t <float>  temperature, default 1.0")
-        Console.WriteLine("  -p <float>  p value in top-p (nucleus) sampling. default 0.9, 0 = off")
-        Console.WriteLine("  -s <int>    random seed, default time(NULL)")
-        Console.WriteLine("  -n <int>    number of steps to run for, default 256. 0 = max_seq_len")
-        Console.WriteLine("  -i <string> input prompt")
-    End Sub
+    Dim _rngSeed As Long
 
     Sub New()
         Call SetSeed(CUInt(Date.UtcNow.Ticks))
@@ -78,45 +75,46 @@ Public Module Llama2
         ' read in the model.bin file
         Dim config As Config
         Dim weights As TransformerWeights
-        If True Then
+
+        Try
+            Dim fileStream As FileStream = New FileStream(checkpoint, FileMode.Open, FileAccess.Read)
+            ' Read in the config header
+            Dim configBytes = New Byte(Marshal.SizeOf(GetType(Config)) - 1) {}
+            If fileStream.Read(configBytes, 0, configBytes.Length) <> configBytes.Length Then Environment.Exit(1)
+
+            Dim handle = GCHandle.Alloc(configBytes, GCHandleType.Pinned)
             Try
-                Dim fileStream As FileStream = New FileStream(checkpoint, FileMode.Open, FileAccess.Read)
-                ' Read in the config header
-                Dim configBytes = New Byte(Marshal.SizeOf(GetType(Config)) - 1) {}
-                If fileStream.Read(configBytes, 0, configBytes.Length) <> configBytes.Length Then Environment.Exit(1)
-
-                Dim handle = GCHandle.Alloc(configBytes, GCHandleType.Pinned)
-                Try
-                    Dim pointer As IntPtr = handle.AddrOfPinnedObject()
-                    config = CType(Marshal.PtrToStructure(pointer, GetType(Config)), Config)
-                Finally
-                    handle.Free()
-                End Try
-
-                ' Negative vocab size is a hacky way of signaling unshared weights. Bit yikes.
-                Dim sharedWeights = config.vocab_size > 0
-                config.vocab_size = Math.Abs(config.vocab_size)
-
-                ' Figure out the file size
-                Dim fileSize = fileStream.Length ' size of the checkpoint file in bytes
-
-                Dim memoryMappedFile = MemoryMappedFiles.MemoryMappedFile.CreateFromFile(fileStream, Nothing, fileSize, MemoryMappedFileAccess.Read, HandleInheritability.None, False)
-                Dim configSizeInBytes As Long = Marshal.SizeOf(GetType(Config))
-                Dim accessor = memoryMappedFile.CreateViewAccessor(configSizeInBytes, fileSize - configSizeInBytes, MemoryMappedFileAccess.Read)
-                weights = New TransformerWeights()
-
-                CheckpointInitWeights(weights, config, accessor, sharedWeights)
-            Catch __unusedFileNotFoundException1__ As FileNotFoundException
-                Console.Error.WriteLine($"Couldn't open file {checkpoint}")
-                Return
-            Catch e As Exception
-                Console.Error.WriteLine($"Couldn't read {checkpoint}: {e.Message}")
-                Return
+                Dim pointer As IntPtr = handle.AddrOfPinnedObject()
+                config = CType(Marshal.PtrToStructure(pointer, GetType(Config)), Config)
+            Finally
+                handle.Free()
             End Try
-        End If
+
+            ' Negative vocab size is a hacky way of signaling unshared weights. Bit yikes.
+            Dim sharedWeights = config.vocab_size > 0
+            config.vocab_size = Math.Abs(config.vocab_size)
+
+            ' Figure out the file size
+            Dim fileSize = fileStream.Length ' size of the checkpoint file in bytes
+
+            Dim memoryMappedFile = MemoryMappedFiles.MemoryMappedFile.CreateFromFile(fileStream, Nothing, fileSize, MemoryMappedFileAccess.Read, HandleInheritability.None, False)
+            Dim configSizeInBytes As Long = Marshal.SizeOf(GetType(Config))
+            Dim accessor = memoryMappedFile.CreateViewAccessor(configSizeInBytes, fileSize - configSizeInBytes, MemoryMappedFileAccess.Read)
+            weights = New TransformerWeights()
+
+            CheckpointInitWeights(weights, config, accessor, sharedWeights)
+        Catch __unusedFileNotFoundException1__ As FileNotFoundException
+            Console.Error.WriteLine($"Couldn't open file {checkpoint}")
+            Return
+        Catch e As Exception
+            Console.Error.WriteLine($"Couldn't read {checkpoint}: {e.Message}")
+            Return
+        End Try
 
         ' right now we cannot run for more than config.seq_len steps
-        If steps <= 0 OrElse steps > config.seq_len Then steps = config.seq_len
+        If steps <= 0 OrElse steps > config.seq_len Then
+            steps = config.seq_len
+        End If
 
         ' read in the tokenizer.bin file
         Dim vocab = New String(config.vocab_size - 1) {}
@@ -198,7 +196,9 @@ Public Module Llama2
             pos += 1
 
             ' data-dependent terminating condition: the BOS (1) token delimits sequences
-            If [next] = 1 Then Exit While
+            If [next] = 1 Then
+                Exit While
+            End If
 
             ' following BOS (1) token, sentencepiece decoder strips any leading whitespace (see PR #89)
             Dim tokenStr As String = If(token = 1 AndAlso vocab([next])(0) = " "c, vocab([next]).TrimStart(), vocab([next]))
@@ -210,7 +210,9 @@ Public Module Llama2
         Console.WriteLine()
 
         ' report achieved tok/s (pos-1 because the timer starts after first iteration)
-        If pos > 1 Then Console.WriteLine($"achieved tok/s: {(pos - 1) / timer.Elapsed.Seconds}, tokens : {pos - 1} time : {timer.Elapsed}")
+        If pos > 1 Then
+            Console.WriteLine($"achieved tok/s: {(pos - 1) / timer.Elapsed.Seconds}, tokens: {pos - 1} time: {timer.Elapsed}")
+        End If
     End Sub
 
     Private Function StrLookup(str As String, vocab As String(), vocabSize As Integer) As Integer
@@ -222,7 +224,7 @@ Public Module Llama2
 
     Private Sub BpeEncode(text As String, vocab As String(), vocabScores As Single(), vocabSize As Integer, maxTokenLength As Integer, ByRef tokens As Integer(), ByRef nTokens As Integer)
 
-        Dim strBuffer As StringBuilder = New StringBuilder(maxTokenLength * 2 + 1) ' *2 for concat, +1 for null terminator
+        Dim strBuffer As New StringBuilder(maxTokenLength * 2 + 1) ' *2 for concat, +1 for null terminator
 
         ' first encode every individual byte in the input string
         nTokens = 0 ' the number of tokens
@@ -549,7 +551,9 @@ Public Module Llama2
         w.freq_cis_real = ReadFloatArray(accessor, offset, p.seq_len * headSize / 2)
         w.freq_cis_imag = ReadFloatArray(accessor, offset, p.seq_len * headSize / 2)
 
-        If sharedWeights Then w.wcls = w.token_embedding_table
+        If sharedWeights Then
+            w.wcls = w.token_embedding_table
+        End If
     End Sub
 
     Private Function ReadFloatArray(accessor As MemoryMappedViewAccessor, ByRef offset As Long, size As Integer) As Single()
@@ -559,99 +563,21 @@ Public Module Llama2
         Return array
     End Function
 
-
     Private Function InitializeRunState(cfg As Config) As RunState
         Return New RunState With {
-.x = New Single(cfg.dim - 1) {},
-.xb = New Single(cfg.dim - 1) {},
-.xb2 = New Single(cfg.dim - 1) {},
-.hb = New Single(cfg.hidden_dim - 1) {},
-.hb2 = New Single(cfg.hidden_dim - 1) {},
-.q = New Single(cfg.dim - 1) {},
-.k = New Single(cfg.dim - 1) {},
-.v = New Single(cfg.dim - 1) {},
-.att = New Single(cfg.n_heads * cfg.seq_len - 1) {},
-.logits = New Single(cfg.vocab_size - 1) {},
-.probindex = New ProbIndex(cfg.vocab_size - 1) {},
-.key_cache = New Single(cfg.n_layers * cfg.seq_len * cfg.dim - 1) {},
-.value_cache = New Single(cfg.n_layers * cfg.seq_len * cfg.dim - 1) {}
-}
+            .x = New Single(cfg.dim - 1) {},
+            .xb = New Single(cfg.dim - 1) {},
+            .xb2 = New Single(cfg.dim - 1) {},
+            .hb = New Single(cfg.hidden_dim - 1) {},
+            .hb2 = New Single(cfg.hidden_dim - 1) {},
+            .q = New Single(cfg.dim - 1) {},
+            .k = New Single(cfg.dim - 1) {},
+            .v = New Single(cfg.dim - 1) {},
+            .att = New Single(cfg.n_heads * cfg.seq_len - 1) {},
+            .logits = New Single(cfg.vocab_size - 1) {},
+            .probindex = New ProbIndex(cfg.vocab_size - 1) {},
+            .key_cache = New Single(cfg.n_layers * cfg.seq_len * cfg.dim - 1) {},
+            .value_cache = New Single(cfg.n_layers * cfg.seq_len * cfg.dim - 1) {}
+        }
     End Function
-
-
-    ' Transformer and RunState structs, and related memory management
-    <StructLayout(LayoutKind.Sequential)>
-    Private Structure Config
-        Public [dim] As Integer ' transformer dimension
-        Public hidden_dim As Integer ' for ffn layers
-        Public n_layers As Integer ' number of layers
-        Public n_heads As Integer ' number of query heads
-        Public n_kv_heads As Integer ' number of key/value heads (can be < query heads because of multiquery)
-        Public vocab_size As Integer ' vocabulary size, usually 256 (byte-level)
-        Public seq_len As Integer ' max sequence length
-    End Structure
-
-    <StructLayout(LayoutKind.Sequential)>
-    Private Structure TransformerWeights
-        ' token embedding table
-        Public token_embedding_table As Single() ' (vocab_size, dim)
-
-        ' weights for rmsnorms
-        Public rms_att_weight As Single() ' (layer, dim) rmsnorm weights
-
-        Public rms_ffn_weight As Single() ' (layer, dim)
-
-        ' weights for matmuls
-        Public wq As Single() ' (layer, dim, dim)
-        Public wk As Single() ' (layer, dim, dim)
-        Public wv As Single() ' (layer, dim, dim)
-
-        Public wo As Single() ' (layer, dim, dim)
-
-        ' weights for ffn
-        Public w1 As Single() ' (layer, hidden_dim, dim)
-        Public w2 As Single() ' (layer, dim, hidden_dim)
-
-        Public w3 As Single() ' (layer, hidden_dim, dim)
-
-        ' final rmsnorm
-        Public rms_final_weight As Single() ' (dim,)
-
-        ' freq_cis for RoPE relatively positional embeddings
-        Public freq_cis_real As Single() ' (seq_len, head_size/2)
-
-        Public freq_cis_imag As Single() ' (seq_len, head_size/2)
-
-        ' (optional) classifier weights for the logits, on the last layer
-        Public wcls As Single()
-    End Structure
-
-    ''' <summary>
-    '''     Used in top-p sampling
-    ''' </summary>
-    Private Structure ProbIndex
-        Public Prob As Single
-        Public Index As Integer
-    End Structure
-
-    <StructLayout(LayoutKind.Sequential)>
-    Private Structure RunState
-        ' current wave of activations
-        Public x As Single() ' activation at current time stamp (dim,)
-        Public xb As Single() ' same, but inside a residual branch (dim,)
-        Public xb2 As Single() ' an additional buffer just for convenience (dim,)
-        Public hb As Single() ' buffer for hidden dimension in the ffn (hidden_dim,)
-        Public hb2 As Single() ' buffer for hidden dimension in the ffn (hidden_dim,)
-        Public q As Single() ' query (dim,)
-        Public k As Single() ' key (dim,)
-        Public v As Single() ' value (dim,)
-        Public att As Single() ' buffer for scores/attention values (n_heads, seq_len)
-        Public logits As Single() ' output logits
-
-        Public probindex As ProbIndex() ' buffer used in top-p sampling
-
-        ' kv cache
-        Public key_cache As Single() ' (layer, seq_len, dim)
-        Public value_cache As Single() ' (layer, seq_len, dim)
-    End Structure
 End Module
