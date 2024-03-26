@@ -2,35 +2,51 @@
 
 <StructLayout(LayoutKind.Sequential)>
 Public Structure TransformerWeights
-    ' token embedding table
+
+    ''' <summary>
+    ''' token embedding table
+    ''' </summary>
     Public token_embedding_table As Single() ' (vocab_size, dim)
 
-    ' weights for rmsnorms
+    ''' <summary>
+    ''' weights for rmsnorms
+    ''' </summary>
     Public rms_att_weight As Single() ' (layer, dim) rmsnorm weights
 
     Public rms_ffn_weight As Single() ' (layer, dim)
 
-    ' weights for matmuls
+    ''' <summary>
+    ''' weights for matmuls
+    ''' </summary>
     Public wq As Single() ' (layer, dim, dim)
     Public wk As Single() ' (layer, dim, dim)
     Public wv As Single() ' (layer, dim, dim)
 
     Public wo As Single() ' (layer, dim, dim)
 
-    ' weights for ffn
+    ''' <summary>
+    ''' weights for ffn
+    ''' </summary>
     Public w1 As Single() ' (layer, hidden_dim, dim)
     Public w2 As Single() ' (layer, dim, hidden_dim)
 
     Public w3 As Single() ' (layer, hidden_dim, dim)
 
-    ' final rmsnorm
+    ''' <summary>
+    ''' final rmsnorm
+    ''' </summary>
     Public rms_final_weight As Single() ' (dim,)
 
-    ' freq_cis for RoPE relatively positional embeddings
+    ''' <summary>
+    ''' freq_cis for RoPE relatively positional embeddings
+    ''' </summary>
     Public freq_cis_real As Single() ' (seq_len, head_size/2)
 
     Public freq_cis_imag As Single() ' (seq_len, head_size/2)
 
-    ' (optional) classifier weights for the logits, on the last layer
+    ''' <summary>
+    ''' (optional) classifier weights for the logits, on the last layer
+    ''' </summary>
     Public wcls As Single()
+
 End Structure
