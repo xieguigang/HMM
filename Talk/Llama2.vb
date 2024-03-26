@@ -72,44 +72,13 @@ Public Module Llama2
             Return
         End If
 
-        ' read in the model.bin file
-        Dim config As Config
-        Dim weights As TransformerWeights
+        Dim model As New ModelReader(checkpoint)
+        Dim config = model.config
+        Dim weights = model.weights
 
-        Try
-            Dim fileStream As FileStream = New FileStream(checkpoint, FileMode.Open, FileAccess.Read)
-            ' Read in the config header
-            Dim configBytes = New Byte(Marshal.SizeOf(GetType(Config)) - 1) {}
-            If fileStream.Read(configBytes, 0, configBytes.Length) <> configBytes.Length Then Environment.Exit(1)
-
-            Dim handle = GCHandle.Alloc(configBytes, GCHandleType.Pinned)
-            Try
-                Dim pointer As IntPtr = handle.AddrOfPinnedObject()
-                config = CType(Marshal.PtrToStructure(pointer, GetType(Config)), Config)
-            Finally
-                handle.Free()
-            End Try
-
-            ' Negative vocab size is a hacky way of signaling unshared weights. Bit yikes.
-            Dim sharedWeights = config.vocab_size > 0
-            config.vocab_size = Math.Abs(config.vocab_size)
-
-            ' Figure out the file size
-            Dim fileSize = fileStream.Length ' size of the checkpoint file in bytes
-
-            Dim memoryMappedFile = MemoryMappedFiles.MemoryMappedFile.CreateFromFile(fileStream, Nothing, fileSize, MemoryMappedFileAccess.Read, HandleInheritability.None, False)
-            Dim configSizeInBytes As Long = Marshal.SizeOf(GetType(Config))
-            Dim accessor = memoryMappedFile.CreateViewAccessor(configSizeInBytes, fileSize - configSizeInBytes, MemoryMappedFileAccess.Read)
-            weights = New TransformerWeights()
-
-            CheckpointInitWeights(weights, config, accessor, sharedWeights)
-        Catch __unusedFileNotFoundException1__ As FileNotFoundException
-            Console.Error.WriteLine($"Couldn't open file {checkpoint}")
+        If Not model.Read Then
             Return
-        Catch e As Exception
-            Console.Error.WriteLine($"Couldn't read {checkpoint}: {e.Message}")
-            Return
-        End Try
+        End If
 
         ' right now we cannot run for more than config.seq_len steps
         If steps <= 0 OrElse steps > config.seq_len Then
@@ -532,36 +501,6 @@ Public Module Llama2
         ' classifier into logits
         Matmul(state.logits, state.x, w.wcls, config.dim, config.vocab_size)
     End Sub
-
-    Private Sub CheckpointInitWeights(ByRef w As TransformerWeights, ByRef p As Config, accessor As MemoryMappedViewAccessor, sharedWeights As Boolean)
-        Dim offset As Long = 0
-
-        w.token_embedding_table = ReadFloatArray(accessor, offset, p.vocab_size * p.dim)
-        w.rms_att_weight = ReadFloatArray(accessor, offset, p.n_layers * p.dim)
-        w.wq = ReadFloatArray(accessor, offset, p.n_layers * p.dim * p.dim)
-        w.wk = ReadFloatArray(accessor, offset, p.n_layers * p.dim * p.dim)
-        w.wv = ReadFloatArray(accessor, offset, p.n_layers * p.dim * p.dim)
-        w.wo = ReadFloatArray(accessor, offset, p.n_layers * p.dim * p.dim)
-        w.rms_ffn_weight = ReadFloatArray(accessor, offset, p.n_layers * p.dim)
-        w.w1 = ReadFloatArray(accessor, offset, p.n_layers * p.dim * p.hidden_dim)
-        w.w2 = ReadFloatArray(accessor, offset, p.n_layers * p.hidden_dim * p.dim)
-        w.w3 = ReadFloatArray(accessor, offset, p.n_layers * p.dim * p.hidden_dim)
-        w.rms_final_weight = ReadFloatArray(accessor, offset, p.dim)
-        Dim headSize As Integer = p.dim / p.n_heads
-        w.freq_cis_real = ReadFloatArray(accessor, offset, p.seq_len * headSize / 2)
-        w.freq_cis_imag = ReadFloatArray(accessor, offset, p.seq_len * headSize / 2)
-
-        If sharedWeights Then
-            w.wcls = w.token_embedding_table
-        End If
-    End Sub
-
-    Private Function ReadFloatArray(accessor As MemoryMappedViewAccessor, ByRef offset As Long, size As Integer) As Single()
-        Dim array = New Single(size - 1) {}
-        accessor.ReadArray(offset, array, 0, size)
-        offset += Marshal.SizeOf(Of Single)() * CLng(size)
-        Return array
-    End Function
 
     Private Function InitializeRunState(cfg As Config) As RunState
         Return New RunState With {
