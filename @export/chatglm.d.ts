@@ -8,6 +8,10 @@
 */
 declare namespace chatglm {
    /**
+     * @param env default value Is ``null``.
+   */
+   function batch_transaltion(content: object, env?: object): object;
+   /**
    */
    function history_json(his: object): string;
    /**
