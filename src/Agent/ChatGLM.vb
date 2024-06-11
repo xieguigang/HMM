@@ -53,6 +53,10 @@ Public Module ChatGLM
     ''' <returns>
     ''' a collection of the batch task data for run the request
     ''' </returns>
+    ''' <remarks>
+    ''' the required file extension suffix name by upload 
+    ''' batch data from web must be ``jsonl``!
+    ''' </remarks>
     <ExportAPI("batch_transaltion")>
     <RApiReturn(GetType(GLMBatchTask))>
     Public Function batch_translation(content As dataframe, Optional env As Environment = Nothing) As Object
