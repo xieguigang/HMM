@@ -1,6 +1,8 @@
 
+Imports System.IO
 Imports Microsoft.VisualBasic.CommandLine.Reflection
 Imports Microsoft.VisualBasic.Scripting.MetaData
+Imports SMRUCC.Rsharp
 Imports SMRUCC.Rsharp.Runtime
 Imports SMRUCC.Rsharp.Runtime.Internal.[Object]
 Imports SMRUCC.Rsharp.Runtime.Interop
@@ -94,6 +96,33 @@ Public Module ChatGLM
         Next
 
         Return batch
+    End Function
+
+    ''' <summary>
+    ''' parse the result of the chatglm batch request
+    ''' </summary>
+    ''' <param name="file"></param>
+    ''' <param name="env"></param>
+    ''' <returns></returns>
+    <ExportAPI("parse_batch_output")>
+    Public Function ParseBatchResult(<RRawVectorArgument> file As Object, Optional env As Environment = Nothing) As Object
+        Dim ispath As Boolean = False
+        Dim s = SMRUCC.Rsharp.GetFileStream(file, IO.FileAccess.Read, env, is_filepath:=ispath)
+        Dim request_id As New List(Of String)
+        Dim result As New List(Of String)
+
+        If ispath Then
+            Try
+                Call s.TryCast(Of Stream).Close()
+            Catch ex As Exception
+
+            End Try
+        End If
+
+        Return dataframe.Create(
+            slot("request_id") = request_id.ToArray,
+            slot("response") = result.ToArray
+        )
     End Function
 
 End Module
