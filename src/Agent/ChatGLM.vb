@@ -118,6 +118,7 @@ Public Module ChatGLM
         Dim request_id As New List(Of String)
         Dim result As New List(Of String)
         Dim annotations As New List(Of String)
+        Dim rownames As New List(Of String)
 
         If s Like GetType(Message) Then
             Return s.TryCast(Of Message)
@@ -131,6 +132,7 @@ Public Module ChatGLM
             Do While Not (line = rd.ReadLine) Is Nothing
                 glm_result = CStr(line).LoadJSON(Of Result)
                 request_id.Add(glm_result.custom_id)
+                rownames.Add(glm_result.id)
 
                 If parse_annotation Then
                     glm_text = glm_result.GetResponseText.FirstOrDefault.LineTokens
@@ -155,6 +157,7 @@ Public Module ChatGLM
         End If
 
         Return dataframe.Create(
+            rownames,
             slot("request_id") = request_id.ToArray,
             slot("response") = result.ToArray,
             slot("annotations") = annotations.ToArray
