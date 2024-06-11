@@ -18,7 +18,8 @@ declare namespace chatglm {
    */
    function input_and_response(his: object, input: string, response: string): object;
    /**
+     * @param parse_annotation default value Is ``true``.
      * @param env default value Is ``null``.
    */
-   function parse_batch_output(file: any, env?: object): any;
+   function parse_batch_output(file: any, parse_annotation?: boolean, env?: object): any;
 }
