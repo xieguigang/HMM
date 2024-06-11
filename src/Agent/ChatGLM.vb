@@ -1,9 +1,12 @@
 
 Imports System.IO
 Imports Microsoft.VisualBasic.CommandLine.Reflection
+Imports Microsoft.VisualBasic.Language
 Imports Microsoft.VisualBasic.Scripting.MetaData
+Imports Microsoft.VisualBasic.Serialization.JSON
 Imports SMRUCC.Rsharp
 Imports SMRUCC.Rsharp.Runtime
+Imports SMRUCC.Rsharp.Runtime.Components
 Imports SMRUCC.Rsharp.Runtime.Internal.[Object]
 Imports SMRUCC.Rsharp.Runtime.Interop
 Imports SMRUCC.Rsharp.Runtime.Vectorization
@@ -110,6 +113,21 @@ Public Module ChatGLM
         Dim s = SMRUCC.Rsharp.GetFileStream(file, IO.FileAccess.Read, env, is_filepath:=ispath)
         Dim request_id As New List(Of String)
         Dim result As New List(Of String)
+
+        If s Like GetType(Message) Then
+            Return s.TryCast(Of Message)
+        End If
+
+        Dim line As Value(Of String) = ""
+        Dim glm_result As Result
+
+        Using rd As New StreamReader(s.TryCast(Of Stream))
+            Do While Not (line = rd.ReadLine) Is Nothing
+                glm_result = CStr(line).LoadJSON(Of Result)
+                request_id.Add(glm_result.custom_id)
+                result.Add(glm_result.GetResponseText.FirstOrDefault)
+            Loop
+        End Using
 
         If ispath Then
             Try

@@ -34,6 +34,10 @@
         Public Property custom_id As String
         Public Property id As String
 
+        ''' <summary>
+        ''' may contains multiple result in one response
+        ''' </summary>
+        ''' <returns></returns>
         Public Iterator Function GetResponseText() As IEnumerable(Of String)
             If response Is Nothing OrElse response.body Is Nothing Then
                 Return
