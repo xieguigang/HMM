@@ -8,9 +8,11 @@
 */
 declare namespace chatglm {
    /**
+     * @param prompt_text default value Is ``'你是一个从英文到中文的语言翻译器'``.
+     * @param add_explains default value Is ``true``.
      * @param env default value Is ``null``.
    */
-   function batch_transaltion(content: object, env?: object): object;
+   function batch_transaltion(content: object, prompt_text?: string, add_explains?: boolean, env?: object): object;
    /**
    */
    function history_json(his: object): string;
