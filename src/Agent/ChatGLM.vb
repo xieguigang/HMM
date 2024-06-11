@@ -108,11 +108,16 @@ Public Module ChatGLM
     ''' <param name="env"></param>
     ''' <returns></returns>
     <ExportAPI("parse_batch_output")>
-    Public Function ParseBatchResult(<RRawVectorArgument> file As Object, Optional env As Environment = Nothing) As Object
+    Public Function ParseBatchResult(<RRawVectorArgument>
+                                     file As Object,
+                                     Optional parse_annotation As Boolean = True,
+                                     Optional env As Environment = Nothing) As Object
+
         Dim ispath As Boolean = False
         Dim s = SMRUCC.Rsharp.GetFileStream(file, IO.FileAccess.Read, env, is_filepath:=ispath)
         Dim request_id As New List(Of String)
         Dim result As New List(Of String)
+        Dim annotations As New List(Of String)
 
         If s Like GetType(Message) Then
             Return s.TryCast(Of Message)
@@ -120,12 +125,20 @@ Public Module ChatGLM
 
         Dim line As Value(Of String) = ""
         Dim glm_result As Result
+        Dim glm_text As String()
 
         Using rd As New StreamReader(s.TryCast(Of Stream))
             Do While Not (line = rd.ReadLine) Is Nothing
                 glm_result = CStr(line).LoadJSON(Of Result)
                 request_id.Add(glm_result.custom_id)
-                result.Add(glm_result.GetResponseText.FirstOrDefault)
+
+                If parse_annotation Then
+                    glm_text = glm_result.GetResponseText.FirstOrDefault.LineTokens
+                    result.Add(glm_text.FirstOrDefault)
+                    annotations.Add(glm_text.Skip(1).JoinBy("\n"))
+                Else
+                    result.Add(glm_result.GetResponseText.FirstOrDefault)
+                End If
             Loop
         End Using
 
@@ -137,9 +150,14 @@ Public Module ChatGLM
             End Try
         End If
 
+        If Not parse_annotation Then
+            Call annotations.Add("-")
+        End If
+
         Return dataframe.Create(
             slot("request_id") = request_id.ToArray,
-            slot("response") = result.ToArray
+            slot("response") = result.ToArray,
+            slot("annotations") = annotations.ToArray
         )
     End Function
 
