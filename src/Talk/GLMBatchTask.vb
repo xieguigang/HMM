@@ -27,4 +27,64 @@
         Public Property messages As History()
 
     End Class
+
+    Public Class Result
+
+        Public Property response As response
+        Public Property custom_id As String
+        Public Property id As String
+
+        Public Iterator Function GetResponseText() As IEnumerable(Of String)
+            If response Is Nothing OrElse response.body Is Nothing Then
+                Return
+            End If
+
+            If response.body.choices.IsNullOrEmpty Then
+                Return
+            End If
+
+            For Each talk As Choice In response.body.choices
+                If talk.message Is Nothing Then
+                    Continue For
+                End If
+
+                Yield talk.message.content
+            Next
+        End Function
+
+    End Class
+
+    Public Class response
+
+        Public Property status_code As Integer
+        Public Property body As ResponseBody
+
+    End Class
+
+    Public Class ResponseBody
+
+        Public Property created As UInteger
+        Public Property model As String
+        Public Property id As String
+        Public Property request_id As String
+        Public Property usage As TokenUsage
+        Public Property choices As choice()
+
+    End Class
+
+    Public Class Choice
+
+        Public Property finish_reason As String
+        Public Property index As Integer
+        Public Property message As History
+
+    End Class
+
+    Public Class TokenUsage
+
+        Public Property completion_tokens As Integer
+        Public Property prompt_tokens As Integer
+        Public Property total_tokens As Integer
+
+    End Class
 End Namespace
