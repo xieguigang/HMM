@@ -29,6 +29,7 @@ Namespace ChatGLM
     Public Enum roles
         user
         assistant
+        system
     End Enum
 
     Public Class History
@@ -36,6 +37,18 @@ Namespace ChatGLM
         Public Property role As String
         Public Property content As String
         Public Property metadata As String
+
+        Sub New()
+        End Sub
+
+        Sub New(role As roles, content As String)
+            Me.role = role.ToString
+            Me.content = content
+        End Sub
+
+        Public Overrides Function ToString() As String
+            Return $"{role}: {content.TrimNewLine("\n")}"
+        End Function
 
     End Class
 

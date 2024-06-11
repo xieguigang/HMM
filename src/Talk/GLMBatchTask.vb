@@ -1,5 +1,8 @@
 ﻿Namespace ChatGLM
 
+    ''' <summary>
+    ''' a task request data for invoke chatglm
+    ''' </summary>
     Public Class GLMBatchTask
 
         ''' <summary>
