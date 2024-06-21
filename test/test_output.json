@@ -1,0 +1,28 @@
+{
+    "response": {
+        "status_code": 200,
+        "body": {
+            "created": 1718094751,
+            "usage": {
+                "completion_tokens": 12,
+                "prompt_tokens": 62,
+                "total_tokens": 74
+            },
+            "model": "glm-4",
+            "id": "8741734473131464654",
+            "choices": [
+                {
+                    "finish_reason": "stop",
+                    "index": 0,
+                    "message": {
+                        "role": "assistant",
+                        "content": "{\"zh-CN\": \"甲基苯硫醚\"}"
+                    }
+                }
+            ],
+            "request_id": "BioDeep_00000026725"
+        }
+    },
+    "custom_id": "BioDeep_00000026725",
+    "id": "batch_1800444858697129984"
+}
