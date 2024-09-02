@@ -41,28 +41,18 @@ Imports System.Text
 Public Module Llama2
 
     Dim _rngSeed As Long
+    Dim state As RunState
+    Dim vocab As String()
+    Dim vocabScores As Single()
+    Dim maxTokenLength As Integer
+    Dim config As Config
+    Dim weights As TransformerWeights
 
     Sub New()
         Call SetSeed(CUInt(Date.UtcNow.Ticks))
     End Sub
 
-    ''' <summary>
-    ''' 
-    ''' </summary>
-    ''' <param name="temperature">0.0 = greedy deterministic. 1.0 = original. don't set higher; -t &lt;float>  temperature, default 1.0</param>
-    ''' <param name="topp">top-p in nucleus sampling; -p &lt;float>  p value in top-p (nucleus) sampling. default 0.9, 0 = off</param>
-    ''' <param name="steps">number of steps to run for; -n &lt;int>    number of steps to run for, default 256. 0 = max_seq_len</param>
-    ''' <param name="prompt">prompt string; -i &lt;string> input prompt</param>
-    ''' <param name="tokenizer">"tokenizer.bin"</param>
-    ''' <param name="seed">-s &lt;int>    random seed, default time(NULL)</param>
-    Public Sub Run(checkpoint As String,
-                   Optional prompt As String = Nothing,
-                   Optional steps As Integer = 256,
-                   Optional temperature As Single = 1.0F,
-                   Optional topp As Single = 0.9F,
-                   Optional seed As Integer? = Nothing,
-                   Optional tokenizer As String = Nothing)
-
+    Public Sub Load(checkpoint As String, tokenizer As String, Optional seed As Integer? = Nothing, Optional steps As Integer = 256)
         If Not seed Is Nothing Then
             _rngSeed = seed
         End If
@@ -73,8 +63,8 @@ Public Module Llama2
         End If
 
         Dim model As New ModelReader(checkpoint)
-        Dim config = model.config
-        Dim weights = model.weights
+        config = model.config
+        weights = model.weights
 
         If Not model.Read Then
             Return
@@ -86,9 +76,9 @@ Public Module Llama2
         End If
 
         ' read in the tokenizer.bin file
-        Dim vocab = New String(config.vocab_size - 1) {}
-        Dim vocabScores = New Single(config.vocab_size - 1) {}
-        Dim maxTokenLength As Integer
+        vocab = New String(config.vocab_size - 1) {}
+        vocabScores = New Single(config.vocab_size - 1) {}
+        maxTokenLength = 0
 
         Using fs As FileStream = New FileStream(tokenizer, FileMode.Open, FileAccess.Read)
             Using reader As BinaryReader = New BinaryReader(fs)
@@ -111,9 +101,38 @@ Public Module Llama2
             End Using
         End Using
 
-
         ' create and init the application RunState
-        Dim state = InitializeRunState(config)
+        state = InitializeRunState(config)
+    End Sub
+
+    ''' <summary>
+    ''' 
+    ''' </summary>
+    ''' <param name="temperature">0.0 = greedy deterministic. 1.0 = original. don't set higher; -t &lt;float>  temperature, default 1.0</param>
+    ''' <param name="topp">top-p in nucleus sampling; -p &lt;float>  p value in top-p (nucleus) sampling. default 0.9, 0 = off</param>
+    ''' <param name="steps">number of steps to run for; -n &lt;int>    number of steps to run for, default 256. 0 = max_seq_len</param>
+    ''' <param name="prompt">prompt string; -i &lt;string> input prompt</param>
+    ''' <param name="tokenizer">"tokenizer.bin"</param>
+    ''' <param name="seed">-s &lt;int>    random seed, default time(NULL)</param>
+    Public Sub Run(checkpoint As String,
+                   Optional prompt As String = Nothing,
+                   Optional steps As Integer = 256,
+                   Optional temperature As Single = 1.0F,
+                   Optional topp As Single = 0.9F,
+                   Optional seed As Integer? = Nothing,
+                   Optional tokenizer As String = Nothing)
+
+        Call Load(checkpoint, tokenizer, seed, steps)
+
+        For Each tokenStr As String In Talk(prompt, steps, temperature, topp)
+            Call Console.Write(tokenStr)
+        Next
+    End Sub
+
+    Public Iterator Function Talk(Optional prompt As String = Nothing,
+                                  Optional steps As Integer = 256,
+                                  Optional temperature As Single = 1.0F,
+                                  Optional topp As Single = 0.9F) As IEnumerable(Of String)
 
         ' process the prompt, if any
         Dim promptTokens As Integer() = Nothing
@@ -122,7 +141,6 @@ Public Module Llama2
             promptTokens = New Integer(prompt.Length - 1) {}
             Llama2.BpeEncode(prompt, vocab, vocabScores, config.vocab_size, maxTokenLength, promptTokens, numPromptTokens)
         End If
-
 
         ' start the main loop
         Dim token = 1 ' init with token 1 (=BOS), as done in Llama-2 sentencepiece tokenizer
@@ -170,24 +188,24 @@ Public Module Llama2
             End If
 
             ' following BOS (1) token, sentencepiece decoder strips any leading whitespace (see PR #89)
-            Dim tokenStr As String = If(token = 1 AndAlso vocab([next])(0) = " "c, vocab([next]).TrimStart(), vocab([next]))
-            Console.Write(tokenStr)
+            Yield If(token = 1 AndAlso vocab([next])(0) = " "c, vocab([next]).TrimStart(), vocab([next]))
+
             token = [next]
         End While
 
-        timer.Start()
-        Console.WriteLine()
+        Call timer.Stop()
 
         ' report achieved tok/s (pos-1 because the timer starts after first iteration)
         If pos > 1 Then
             Console.WriteLine($"achieved tok/s: {(pos - 1) / timer.Elapsed.Seconds}, tokens: {pos - 1} time: {timer.Elapsed}")
         End If
-    End Sub
+    End Function
 
     Private Function StrLookup(str As String, vocab As String(), vocabSize As Integer) As Integer
         For i = 0 To vocabSize - 1
-            If Equals(str, vocab(i)) Then Return i
+            If str = vocab(i) Then Return i
         Next
+
         Return -1
     End Function
 
