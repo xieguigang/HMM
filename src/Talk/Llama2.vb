@@ -45,8 +45,7 @@ Public Module Llama2
     Dim vocab As String()
     Dim vocabScores As Single()
     Dim maxTokenLength As Integer
-    Dim config As Config
-    Dim weights As TransformerWeights
+    Dim model As ModelReader
 
     Sub New()
         Call SetSeed(CUInt(Date.UtcNow.Ticks))
@@ -63,12 +62,13 @@ Public Module Llama2
         End If
 
         Dim model As New ModelReader(checkpoint)
-        config = model.config
-        weights = model.weights
 
         If Not model.Read Then
             Return
         End If
+
+        Dim config = model.config
+        Dim weights = model.weights
 
         ' right now we cannot run for more than config.seq_len steps
         If steps <= 0 OrElse steps > config.seq_len Then
@@ -101,8 +101,7 @@ Public Module Llama2
             End Using
         End Using
 
-        ' create and init the application RunState
-        state = InitializeRunState(config)
+        Llama2.model = model
     End Sub
 
     ''' <summary>
@@ -133,6 +132,12 @@ Public Module Llama2
                                   Optional steps As Integer = 256,
                                   Optional temperature As Single = 1.0F,
                                   Optional topp As Single = 0.9F) As IEnumerable(Of String)
+
+        Dim config = model.config
+        Dim weights = model.weights
+
+        ' create and init the application RunState
+        state = InitializeRunState(config)
 
         ' process the prompt, if any
         Dim promptTokens As Integer() = Nothing
