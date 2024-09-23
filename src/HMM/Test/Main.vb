@@ -22,11 +22,11 @@ Public Module Main
     End Function
 
     Public Sub Main()
-        Call Llamatest.Main2()
-        Call Module1.Main2()
+        ' Call Llamatest.Main2()
+        ' Call Module1.Main2()
 
 
-        Dim jp As JsonHMM = "F:\HMM\Resources\test_HMM.json".ReadAllText.LoadJSON(Of JsonHMM)
+        Dim jp As JsonHMM = "G:\HMM\test\test_HMM.json".ReadAllText.LoadJSON(Of JsonHMM)
         Dim name As String = jp.modelInfo.name
         Dim states As List(Of String) = New List(Of String)(jp.modelData.states)
         Dim observations As List(Of String) = New List(Of String)(jp.modelData.observations)
