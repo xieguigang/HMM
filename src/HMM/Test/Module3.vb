@@ -1,21 +1,36 @@
-﻿Imports System
-Imports System.Collections.Generic
+﻿Imports randf = Microsoft.VisualBasic.Math.RandomExtensions
 
 Module HMMTextGenerator
 
     ' 状态类
     Private Class State
-        Public TransitionProbabilities As Dictionary(Of State, Double)
-        Public EmissionProbabilities As Dictionary(Of String, Double)
-        Public Name As String
 
-        Public Sub New()
-            TransitionProbabilities = New Dictionary(Of State, Double)()
-            EmissionProbabilities = New Dictionary(Of String, Double)()
-        End Sub
+        Public TransitionProbabilities As New Dictionary(Of State, Double)
+        Public EmissionProbabilities As New Dictionary(Of String, Double)
+        Public EmissionTransition As New Dictionary(Of String, Dictionary(Of State, Double))
+
+        Public Name As String
 
         Public Overrides Function ToString() As String
             Return Name
+        End Function
+
+        Public Function SumNormalize() As State
+            Dim transition As Double = TransitionProbabilities.Values.Sum
+            Dim transitionMatrix = TransitionProbabilities.OrderByDescending(Function(a) a.Value).ToDictionary(Function(a) a.Key, Function(a) a.Value / transition)
+            Dim emission As Double = EmissionProbabilities.Values.Sum
+            Dim emissionMatrix = EmissionProbabilities.OrderByDescending(Function(a) a.Value).ToDictionary(Function(a) a.Key, Function(a) a.Value / emission)
+            Dim transition2 As New Dictionary(Of String, Dictionary(Of State, Double))
+
+            For Each key As String In emissionMatrix.Keys
+                Dim sum = EmissionTransition(key).Values.Sum
+                EmissionTransition(key) = EmissionTransition(key).OrderByDescending(Function(a) a.Value).ToDictionary(Function(a) a.Key, Function(a) a.Value / sum)
+            Next
+
+            TransitionProbabilities = transitionMatrix
+            EmissionProbabilities = emissionMatrix
+
+            Return Me
         End Function
 
         Public Shared Sub Push(ByRef state As State, transitNext As String, pool As Dictionary(Of String, State), obs As String)
@@ -23,8 +38,17 @@ Module HMMTextGenerator
 
             If Not state.EmissionProbabilities.ContainsKey(obs) Then
                 state.EmissionProbabilities(obs) = 1
+                state.EmissionTransition.Add(obs, New Dictionary(Of State, Double) From {{pool(transitNext), 1}})
             Else
                 state.EmissionProbabilities(obs) += 1
+
+                Dim [set] = state.EmissionTransition(obs)
+
+                If Not [set].ContainsKey(pool(transitNext)) Then
+                    [set](pool(transitNext)) = 1
+                Else
+                    [set](pool(transitNext)) += 1
+                End If
             End If
         End Sub
     End Class
@@ -35,7 +59,7 @@ Module HMMTextGenerator
         Public InitialState As State
 
         Public Sub New(states As IEnumerable(Of State))
-            Me.States = New List(Of State)(states)
+            Me.States = New List(Of State)(From s In states Select s.SumNormalize)
             Me.InitialState = Me.States(0)
         End Sub
 
@@ -81,14 +105,16 @@ Module HMMTextGenerator
 
                 Yield observation
 
+                Dim trans = currentState.EmissionTransition(observation)
+
                 ' 选择下一个状态
-                currentState = ChooseNextState(currentState.TransitionProbabilities)
+                currentState = ChooseNextState(trans)
             Next
         End Function
 
         ' 根据概率选择观测
         Private Function ChooseObservation(probabilities As Dictionary(Of String, Double)) As String
-            Dim randomValue As Double = New Random().NextDouble()
+            Dim randomValue As Double = randf.NextDouble()
             Dim cumulativeProbability As Double = 0.0
 
             For Each pair In probabilities
@@ -103,7 +129,7 @@ Module HMMTextGenerator
 
         ' 根据概率选择下一个状态
         Private Function ChooseNextState(probabilities As Dictionary(Of State, Double)) As State
-            Dim randomValue As Double = New Random().NextDouble()
+            Dim randomValue As Double = randf.NextDouble()
             Dim cumulativeProbability As Double = 0.0
 
             For Each pair In probabilities
