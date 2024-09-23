@@ -34,7 +34,7 @@ Public Class Corpora
             For i As Integer = 0 To words.Length - 1
                 key = words(i).ToLower
 
-                If key.StringEmpty Then
+                If key.StringEmpty(, True) Then
                     Continue For
                 End If
 

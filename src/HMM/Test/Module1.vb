@@ -19,7 +19,7 @@ Module Module1
         Dim talk As New Generator(New IntRange(3, 60), corpus)
 
         For i As Integer = 0 To 20
-            Call Console.WriteLine(talk.Generate(start:="Methoxamine"))
+            Call Console.WriteLine(talk.Generate(start:="methoxamine"))
         Next
 
         Pause()
