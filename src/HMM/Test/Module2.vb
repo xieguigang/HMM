@@ -1,10 +1,12 @@
-﻿Imports Microsoft.VisualBasic.DataMining.HMM.Model
+﻿Imports System.Runtime.CompilerServices
+Imports Microsoft.VisualBasic.DataMining.HMM
+Imports Microsoft.VisualBasic.DataMining.HMM.Model
 
 Module Module2
 
     Sub HMM2()
 
-        Dim states = {
+        Dim states As New List(Of String) From {
             "Begin",
             "StatementBegining", "StatementFirstHalf", "StatementSecondHalf", "StatementEnd", "StatementScalar", ' .
             "QuestionsBegining", "QuestionsFirstHalf", "QuestionsSecondHalf", "QuestionsEnd", "QuestionsScalar", ' ?
@@ -30,13 +32,21 @@ Module Module2
                 par = par & "."
             End If
 
-            Dim parts = par.Matches(".*?[,.!?]")
+            Dim parts = par.Matches(".*?[,.!?]").ToArray
             Dim stat As String = "Begin"
             Dim last As String
 
             For Each line As String In parts
-                Dim tokens As String() = line.Trim(" "c, "."c, ","c, "!"c, "?"c).Split
+                Dim tokens As String() = line.Trim(" "c, "."c, ","c, "!"c, "?"c).ToLower.Split(" "c, "("c, ")"c, "["c, "]"c)
                 Dim type As String
+
+                tokens = tokens.Where(Function(s) Not s.StringEmpty).ToArray
+
+                If tokens.Length = 0 Then
+                    Continue For
+                Else
+                    observations.AddRange(tokens)
+                End If
 
                 Select Case line.Last
                     Case "." : type = "Statement"
@@ -49,9 +59,9 @@ Module Module2
 
                 If tokens.Length = 1 Then
                     last = type & "Scalar"
-                    transitionMatrix($"{stat} -> {last}") += 1
+                    transitionMatrix.Plus($"{stat} -> {last}")
                     stat = last
-                    emissionMatrix($"{stat} -> {tokens(0)}") += 1
+                    emissionMatrix.Plus($"{stat} -> {tokens(0)}")
                 Else
                     For i As Integer = 0 To tokens.Length - 1
                         If i = 0 Then
@@ -64,12 +74,31 @@ Module Module2
                             last = type & "SecondHalf"
                         End If
 
-                        transitionMatrix($"{stat} -> {last}") += 1
+                        transitionMatrix.Plus($"{stat} -> {last}")
                         stat = last
-                        emissionMatrix($"{stat} -> {tokens(0)}") += 1
+                        emissionMatrix.Plus($"{stat} -> {tokens(i)}")
                     Next
                 End If
             Next
         Next
+
+        Dim transistion = transitionMatrix.Values.Sum
+        Dim emission = emissionMatrix.Values.Sum
+
+        transitionMatrix = transitionMatrix.ToDictionary(Function(a) a.Key, Function(a) a.Value / transistion)
+        emissionMatrix = emissionMatrix.ToDictionary(Function(a) a.Key, Function(a) a.Value / emission)
+
+        Dim stats_vec As New Dictionary(Of String, Double)
+        Dim hmm As New HiddenMarkovModel("text generator", states, observations.Distinct.ToList, stats_vec, transitionMatrix, emissionMatrix)
+
+    End Sub
+
+    <Extension>
+    Private Sub Plus(ByRef list As Dictionary(Of String, Double), token As String)
+        If Not list.ContainsKey(token) Then
+            list.Add(token, 1)
+        Else
+            list(token) += 1
+        End If
     End Sub
 End Module
