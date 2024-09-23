@@ -96,25 +96,42 @@ Module HMMTextGenerator
         'End Sub
 
         ' 生成文本
-        Public Iterator Function GenerateText(length As Integer) As IEnumerable(Of String)
+        Public Iterator Function GenerateText(length As Integer, Optional temperature As Double = 0.99) As IEnumerable(Of String)
             Dim currentState As State = InitialState
 
             For i As Integer = 1 To length
                 ' 选择发射
-                Dim observation As String = ChooseObservation(currentState.EmissionProbabilities)
+                Dim observation As String = ChooseObservation(currentState.EmissionProbabilities, temperature)
 
                 Yield observation
 
-                Dim trans = currentState.EmissionTransition(observation)
+                Select Case currentState.Name
+                    Case "StatementEnd", "StatementScalar" : Yield "."
+                    Case "QuestionsEnd", "QuestionsScalar" : Yield "?"
+                    Case "ExclamationEnd", "ExclamationScalar" : Yield "!"
+                    Case "PauseEnd", "PauseScalar" : Yield ","
+                End Select
 
                 ' 选择下一个状态
-                currentState = ChooseNextState(trans)
+                currentState = ChooseNextState(currentState, observation, temperature)
+
+                If currentState Is Nothing Then
+                    Exit For
+                End If
             Next
         End Function
 
-        ' 根据概率选择观测
-        Private Function ChooseObservation(probabilities As Dictionary(Of String, Double)) As String
-            Dim randomValue As Double = randf.NextDouble()
+        ''' <summary>
+        ''' 
+        ''' </summary>
+        ''' <param name="probabilities">sort in desc order</param>
+        ''' <param name="temperature">
+        ''' the lower temperature, the smaller random value, the more easy select the first word[fixed]
+        ''' the higher temperature, the bigger random value, the more easy select other words.
+        ''' </param>
+        ''' <returns></returns>
+        Private Function ChooseObservation(probabilities As Dictionary(Of String, Double), temperature As Double) As String
+            Dim randomValue As Double = randf.NextDouble(0, temperature)
             Dim cumulativeProbability As Double = 0.0
 
             For Each pair In probabilities
@@ -128,12 +145,23 @@ Module HMMTextGenerator
         End Function
 
         ' 根据概率选择下一个状态
-        Private Function ChooseNextState(probabilities As Dictionary(Of State, Double)) As State
-            Dim randomValue As Double = randf.NextDouble()
+        Private Function ChooseNextState(current As State, observation As String, temperature As Double) As State
+            Dim randomValue As Double = randf.NextDouble(0, 1 - temperature)
             Dim cumulativeProbability As Double = 0.0
+            Dim probabilities = current.TransitionProbabilities
+            Dim observed = current.EmissionTransition(observation)
 
             For Each pair In probabilities
-                cumulativeProbability += pair.Value
+                Dim p As Double = pair.Value
+
+                If observed.ContainsKey(pair.Key) Then
+                    p *= observed(pair.Key)
+                Else
+                    p = 0
+                End If
+
+                cumulativeProbability += p
+
                 If randomValue < cumulativeProbability Then
                     Return pair.Key
                 End If
@@ -229,9 +257,11 @@ Module HMMTextGenerator
         Dim hmm As New HiddenMarkovModel(transitionMatrix.Values)
         ' hmm.Train()
 
-        For i As Integer = 0 To 100
-            Dim generatedText As String = hmm.GenerateText(10).JoinBy(" ")
-            Console.WriteLine("Generated Text: " & generatedText)
+        For i As Integer = 0 To 10
+            Dim generatedText As String = hmm.GenerateText(200, temperature:=0.8).JoinBy(" ")
+            Console.WriteLine("  " & generatedText)
+            Console.WriteLine()
+            Console.WriteLine()
         Next
 
         Pause()
