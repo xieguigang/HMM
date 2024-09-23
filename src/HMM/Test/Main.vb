@@ -24,6 +24,7 @@ Public Module Main
     Public Sub Main()
         ' Call Llamatest.Main2()
         ' Call Module1.Main2()
+        Call Module1.Main2()
 
 
         Dim jp As JsonHMM = "G:\HMM\test\test_HMM.json".ReadAllText.LoadJSON(Of JsonHMM)
