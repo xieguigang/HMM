@@ -5,7 +5,13 @@ Public Class Generator
 
     ReadOnly len As IntRange
     ReadOnly corpora As Corpora
+    ReadOnly temperature As Double = 0
 
+    ''' <summary>
+    ''' 
+    ''' </summary>
+    ''' <param name="len">word count ranges for output sentense.</param>
+    ''' <param name="corpora"></param>
     Public Sub New(len As IntRange, corpora As Corpora)
         Me.len = len
         Me.corpora = corpora
@@ -16,22 +22,22 @@ Public Class Generator
     ''' </summary>
     ''' <param name="start">the start word</param>
     ''' <returns></returns>
-    Public Function Generate(Optional start As String = Nothing) As String
+    Public Function Generate(Optional start As String = Nothing, Optional temperature As Double = 0) As String
         Dim generatedText As New List(Of String)
         Dim numWords As Integer = randomizeNumWords()
         Dim curword As String
 
         ' start word
         If start.StringEmpty Then
-            curWord = getRandomWord()
+            curword = getRandomWord()
         Else
-            curWord = start
+            curword = start
         End If
 
-        Call generatedText.Add(curWord)
+        Call generatedText.Add(curword)
 
         For i As Integer = 0 To numWords - 1
-            Dim words = corpora.GetCorpusVertex(curWord)
+            Dim words = corpora.GetCorpusVertex(curword)
             Dim values = New Double(words.Count - 1) {}
 
             For j As Integer = 0 To values.Length - 1
@@ -39,12 +45,12 @@ Public Class Generator
             Next
 
             If values.Length <> 0 Then
-                curWord = words(rouletteSelect(values)).str
+                curword = words(rouletteSelect(values, temperature)).str
             Else
-                curWord = getRandomWord()
+                curword = getRandomWord()
             End If
 
-            generatedText.Add(curWord)
+            generatedText.Add(curword)
         Next
 
         Return generatedText.JoinBy(" ")
@@ -63,14 +69,19 @@ re0:
         Return words(rnd.Next(words.Count))
     End Function
 
-    Public Function rouletteSelect(weight As Double()) As Integer
+    ''' <summary>
+    ''' get common words
+    ''' </summary>
+    ''' <param name="weight"></param>
+    ''' <returns></returns>
+    Public Function rouletteSelect(weight As Double(), temperature As Double) As Integer
         Dim weight_sum As Double = weight.Sum
-        Dim value As Double = rnd.NextDouble() * weight_sum
+        Dim value As Double = rnd.NextDouble() * weight_sum + Double.Epsilon
 
         For i As Integer = 0 To weight.Length - 1
             value -= weight(i)
 
-            If value <= 0 Then
+            If value <= temperature Then
                 Return i
             End If
         Next

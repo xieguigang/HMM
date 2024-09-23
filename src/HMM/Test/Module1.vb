@@ -16,10 +16,10 @@ Module Module1
             Next
         Next
 
-        Dim talk As New Generator(New IntRange(3, 60), corpus)
+        Dim talk As New Generator(New IntRange(6, 120), corpus)
 
-        For i As Integer = 0 To 20
-            Call Console.WriteLine(talk.Generate(start:="methoxamine"))
+        For i As Integer = 0 To 10
+            Call Console.WriteLine(talk.Generate(start:="methoxamine", temperature:=0.3))
         Next
 
         Pause()
