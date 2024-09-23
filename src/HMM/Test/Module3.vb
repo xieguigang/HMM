@@ -229,8 +229,10 @@ Module HMMTextGenerator
         Dim hmm As New HiddenMarkovModel(transitionMatrix.Values)
         ' hmm.Train()
 
-        Dim generatedText As String = hmm.GenerateText(10).JoinBy(" ")
-        Console.WriteLine("Generated Text: " & generatedText)
+        For i As Integer = 0 To 100
+            Dim generatedText As String = hmm.GenerateText(10).JoinBy(" ")
+            Console.WriteLine("Generated Text: " & generatedText)
+        Next
 
         Pause()
     End Sub
