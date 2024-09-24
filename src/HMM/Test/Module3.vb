@@ -33,7 +33,9 @@ Module HMMTextGenerator
             Return Me
         End Function
 
-        Public Shared Sub Push(ByRef state As State, transitNext As String, pool As Dictionary(Of String, State), obs As String)
+        Public Shared Sub Push(pool As Dictionary(Of String, State), current As String, transitNext As String, obs As String)
+            Dim state As State = pool(current)
+
             state.TransitionProbabilities(pool(transitNext)) += 1
 
             If Not state.EmissionProbabilities.ContainsKey(obs) Then
@@ -232,7 +234,7 @@ Module HMMTextGenerator
 
                 If tokens.Length = 1 Then
                     last = type & "Scalar"
-                    State.Push(transitionMatrix(stat), last, transitionMatrix, tokens(0))
+                    State.Push(transitionMatrix, stat, last, tokens(0))
                     stat = last
                 Else
                     For i As Integer = 0 To tokens.Length - 1
@@ -246,7 +248,7 @@ Module HMMTextGenerator
                             last = type & "SecondHalf"
                         End If
 
-                        State.Push(transitionMatrix(stat), last, transitionMatrix, tokens(i))
+                        State.Push(transitionMatrix, stat, last, tokens(i))
                         stat = last
                         ' emissionMatrix.Plus($"{stat} -> {tokens(i)}")
                     Next
