@@ -1,4 +1,5 @@
-﻿Imports randf = Microsoft.VisualBasic.Math.RandomExtensions
+﻿Imports Microsoft.VisualBasic.Linq
+Imports randf = Microsoft.VisualBasic.Math.RandomExtensions
 
 Module HMMTextGenerator
 
@@ -152,15 +153,25 @@ Module HMMTextGenerator
             Dim cumulativeProbability As Double = 0.0
             Dim probabilities = current.TransitionProbabilities
             Dim observed = current.EmissionTransition(observation)
+            Dim probs As New Dictionary(Of State, Double)
 
-            For Each pair In probabilities
-                Dim p As Double = pair.Value
-
-                If observed.ContainsKey(pair.Key) Then
-                    p *= observed(pair.Key)
-                Else
-                    p = 0
+            For Each s In probabilities.Keys.JoinIterates(observed.Keys).Distinct
+                If probabilities.ContainsKey(s) AndAlso observed.ContainsKey(s) Then
+                    probs(s) = probabilities(s) * observed(s)
                 End If
+            Next
+
+            Dim sum = probs.Values.Sum
+
+            probs = probs _
+                .OrderByDescending(Function(a) a.Value) _
+                .ToDictionary(Function(a) a.Key,
+                              Function(a)
+                                  Return a.Value / sum
+                              End Function)
+
+            For Each pair As KeyValuePair(Of State, Double) In probs
+                Dim p As Double = pair.Value
 
                 cumulativeProbability += p
 
