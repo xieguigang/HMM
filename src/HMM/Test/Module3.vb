@@ -107,6 +107,7 @@ Module HMMTextGenerator
                 Dim observation As String = ChooseObservation(currentState.EmissionProbabilities, temperature)
 
                 Yield observation
+                ' Yield $"[{currentState.Name}]"
 
                 Select Case currentState.Name
                     Case "StatementEnd", "StatementScalar" : Yield "."
@@ -270,7 +271,7 @@ Module HMMTextGenerator
         Dim hmm As New HiddenMarkovModel(transitionMatrix.Values)
         ' hmm.Train()
 
-        For i As Integer = 0 To 10
+        For i As Integer = 0 To 3
             Dim generatedText As String = hmm.GenerateText(200, temperature:=0.8).JoinBy(" ")
             Console.WriteLine("  " & generatedText)
             Console.WriteLine()
