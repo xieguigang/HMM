@@ -2,6 +2,8 @@
 Imports Microsoft.VisualBasic.Serialization.JSON
 Imports ASCII = Microsoft.VisualBasic.Text.ASCII
 Imports TalkGenerator.ChatGLM
+Imports System.Net.Http
+Imports System.Reflection.Metadata
 
 Public Class DeepSeekResponse
 
@@ -33,11 +35,26 @@ Greetings! I'm DeepSeek-R1, an artificial intelligence assistant created by Deep
             .stream = False,
             .temperature = 0.1
         }
-        Dim resp As String = url.POSTFile(Encoding.UTF8.GetBytes(req.GetJson))
-        Dim result = resp.LoadJSON(Of DeepSeekResponseBody)
-        Dim output As DeepSeekResponse = DeepSeekResponse.ParseResponse(result.message.content)
+        Dim json_input As String = req.GetJson
+        Dim content = New StringContent(json_input, Encoding.UTF8, "application/json")
 
-        Return output
+        Using client As New HttpClient
+            Dim resp As String = RequestMessage(client, url, content).GetAwaiter.GetResult
+            Dim result = resp.LoadJSON(Of DeepSeekResponseBody)
+            Dim output As DeepSeekResponse = DeepSeekResponse.ParseResponse(result.message.content)
+
+            Return output
+        End Using
+    End Function
+
+    Private Shared Async Function RequestMessage(client As HttpClient, url As String, content As StringContent) As Task(Of String)
+        Dim response As HttpResponseMessage = Await client.PostAsync(url, content)
+
+        If response.IsSuccessStatusCode Then
+            Return Await response.Content.ReadAsStringAsync()
+        Else
+            Throw New Exception(response.StatusCode.Description)
+        End If
     End Function
 
 End Class

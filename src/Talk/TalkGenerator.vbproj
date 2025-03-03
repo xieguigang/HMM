@@ -21,21 +21,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <RemoveIntegerChecks>True</RemoveIntegerChecks>
     <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Rsharp_app_release|AnyCPU'">
     <RemoveIntegerChecks>True</RemoveIntegerChecks>
     <DebugType>full</DebugType>
+    <DefineTrace>True</DefineTrace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <RemoveIntegerChecks>True</RemoveIntegerChecks>
     <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Rsharp_app_release|x64'">
     <RemoveIntegerChecks>True</RemoveIntegerChecks>
     <DebugType>full</DebugType>
+    <DefineTrace>True</DefineTrace>
   </PropertyGroup>
 
   <ItemGroup>
