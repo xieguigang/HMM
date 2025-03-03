@@ -1,7 +1,4 @@
-﻿Imports System.Diagnostics.CodeAnalysis
-Imports System.IO
-Imports System.IO.MemoryMappedFiles
-Imports System.Runtime.InteropServices
+﻿Imports System.IO
 Imports System.Text
 
 'MIT License
