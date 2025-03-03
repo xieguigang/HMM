@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>TalkGenerator.ChatGLM.RequestBody</title>
+    <title>TalkGenerator.DeepSeekResponse</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
     <link rel="stylesheet" type="text/css" href="../../_assets/page.css">
@@ -13,12 +13,12 @@
 
         <table style="width: 100%;">
             <tr>
-                <td>RequestBody {TalkGenerator.ChatGLM}</td>
+                <td>DeepSeekResponse {TalkGenerator}</td>
                 <td style="text-align: right;">.NET clr documentation</td>
             </tr>
         </table>
 
-        <h2>RequestBody</h2>
+        <h2>DeepSeekResponse</h2>
 
         <h3>Description</h3>
 
@@ -28,23 +28,17 @@
 
         <pre>
             <code id="clr_ts">
-# namespace TalkGenerator.ChatGLM
-export class RequestBody {
-   messages: <a href="/vignettes/clr/TalkGenerator/ChatGLM/History.html">History[]</a>;
-   # 每个batch文件只能包含对单个模型的请求,支持 glm-4、glm-3-turbo.
-   model: string;
-   stream: boolean;
-   temperature: <a href="/vignettes/clr/System/Nullable`1.html">Nullable`1</a>;
+# namespace TalkGenerator
+export class DeepSeekResponse {
+   output: string;
+   think: string;
 }
 </code>
         </pre>
 
         <h3>.NET clr type reference tree</h3>
 
-        <ol>
-<li>use by <i>property</i> member <code>messages</code>: <a href="/vignettes/clr/TalkGenerator/ChatGLM/History.html">History</a></li>
-<li>use by <i>property</i> member <code>temperature</code>: <a href="/vignettes/clr/System/Nullable`1.html">Nullable`1</a></li>
-</ol>
+        this clr type has no other .net clr type reference.
 
 
         <hr />
