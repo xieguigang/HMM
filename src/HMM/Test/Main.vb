@@ -22,9 +22,10 @@ Public Module Main
     End Function
 
     Public Sub Main()
+        Call Llamatest.Main2()
         Call HMMTextGenerator.Main33()
         Call Module2.HMM2()
-        ' Call Llamatest.Main2()
+
         ' Call Module1.Main2()
         Call Module1.Main2()
 
