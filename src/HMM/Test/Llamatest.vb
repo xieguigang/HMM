@@ -8,6 +8,7 @@ Module Llamatest
         ' Call Llama2.Run("E:\HMM\data\Llama2\stories15M.bin", tokenizer:="E:\HMM\data\Llama2\tokenizer.bin")
 
         Dim test_parse = DeepSeekResponse.ParseResponse(DeepSeekResponse.who_are_you)
+        Dim list As String() = "E:\HMM\test\stream.jsonl".ReadAllLines
 
 
         ' test deepseek

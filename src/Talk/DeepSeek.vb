@@ -32,17 +32,25 @@ Greetings! I'm DeepSeek-R1, an artificial intelligence assistant created by Deep
                 New History With {.content = message, .role = "user"}
             },
             .model = model,
-            .stream = False,
+            .stream = True,
             .temperature = 0.1
         }
         Dim json_input As String = req.GetJson
         Dim content = New StringContent(json_input, Encoding.UTF8, "application/json")
 
-        Using client As New HttpClient
+        Using client As New HttpClient With {.Timeout = TimeSpan.FromHours(1)}
             Dim resp As String = RequestMessage(client, url, content).GetAwaiter.GetResult
-            Dim result = resp.LoadJSON(Of DeepSeekResponseBody)
-            Dim output As DeepSeekResponse = DeepSeekResponse.ParseResponse(result.message.content)
+            Dim jsonl As String() = resp.LineTokens
+            Dim msg As New StringBuilder
 
+            For Each stream As String In jsonl
+                Dim result = stream.LoadJSON(Of DeepSeekResponseBody)
+                Dim deepseek_think = result.message.content
+
+                Call msg.Append(deepseek_think)
+            Next
+
+            Dim output As DeepSeekResponse = DeepSeekResponse.ParseResponse(msg.ToString)
             Return output
         End Using
     End Function
@@ -68,5 +76,6 @@ Public Class DeepSeekResponseBody
     ''' <returns></returns>
     Public Property model As String
     Public Property message As History
+    Public Property done As Boolean
 
 End Class

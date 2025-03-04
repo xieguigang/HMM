@@ -25,6 +25,10 @@
         Public Property model As String
         Public Property temperature As Double?
         Public Property messages As History()
+        ''' <summary>
+        ''' json list response
+        ''' </summary>
+        ''' <returns></returns>
         Public Property stream As Boolean = False
 
     End Class

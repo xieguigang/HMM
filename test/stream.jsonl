@@ -1,0 +1,2 @@
+{"model":"deepseek-r1:1.5b","created_at":"2025-03-04T00:35:49.643934454Z","message":{"role":"assistant","content":"。"},"done":false}
+{"model":"deepseek-r1:1.5b","created_at":"2025-03-04T00:35:49.730591802Z","message":{"role":"assistant","content":""},"done_reason":"stop","done":true,"total_duration":120385249724,"load_duration":30423904,"prompt_eval_count":2048,"prompt_eval_duration":65650000000,"eval_count":571,"eval_duration":54698000000}
