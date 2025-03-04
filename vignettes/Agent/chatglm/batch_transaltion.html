@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>batch_transaltion</title>
+    <title>create json data for run chatglm batch task</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
     <link rel="stylesheet" type="text/css" href="../../_assets/page.css">
@@ -18,11 +18,11 @@
             </tr>
         </table>
 
-        <h2>batch_transaltion</h2>
+        <h2>create json data for run chatglm batch task</h2>
 
         <h3>Description</h3>
 
-        batch_transaltion
+        
 
         <h3>Usage</h3>
 
@@ -36,12 +36,19 @@
 
         <table>
             
+<dt>content</dt>
+<dd><p>a dataframe object that contains the batch task data for run:
+ 
+ 1. id: the unique reference id of each task
+ 2. term: the term for do translation. [as <a href="/vignettes/clr/SMRUCC/Rsharp/Runtime/Internal/Object/dataframe.html">dataframe</a>]</p></dd>
+
         </table>
 
 
-        <h3 style="display: none;">Details</h3>
+        <h3 style="display: block;">Details</h3>
 
-        
+        <p>the required file extension suffix name by upload 
+ batch data from web must be <code>jsonl</code>!</p>
 
         <h3 style="display: block">Authors</h3>
 
@@ -49,7 +56,7 @@
 
         <h3>Value</h3>
 
-        this function returns data object of type <a href="/vignettes/clr/TalkGenerator/ChatGLM/GLMBatchTask.html">GLMBatchTask</a>.<h4>clr value class</h4><ul><li><a href="/vignettes/clr/TalkGenerator/ChatGLM/GLMBatchTask.html">GLMBatchTask</a></li></ul>
+        <p>a collection of the batch task data for run the request</p><h4>clr value class</h4><ul><li><a href="/vignettes/clr/TalkGenerator/ChatGLM/GLMBatchTask.html">GLMBatchTask</a></li></ul>
 
         <h3 style="display: none;">Examples</h3>
 
