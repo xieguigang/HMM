@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <RootNamespace>TalkGenerator</RootNamespace>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
     <Platforms>AnyCPU;x64</Platforms>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Configurations>Debug;Release;Rsharp_app_release</Configurations>

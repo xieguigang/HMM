@@ -1,9 +1,8 @@
-﻿Imports System.Text
+﻿Imports System.Net.Http
+Imports System.Text
 Imports Microsoft.VisualBasic.Serialization.JSON
-Imports ASCII = Microsoft.VisualBasic.Text.ASCII
 Imports TalkGenerator.ChatGLM
-Imports System.Net.Http
-Imports System.Reflection.Metadata
+Imports ASCII = Microsoft.VisualBasic.Text.ASCII
 
 Public Class DeepSeekResponse
 
