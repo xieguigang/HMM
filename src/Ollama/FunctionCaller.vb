@@ -1,11 +1,23 @@
-﻿Imports Ollama.JSON.FunctionCall
+﻿Imports System.Runtime.CompilerServices
+Imports Ollama.JSON.FunctionCall
 
 Public Class FunctionCaller
 
     ReadOnly registry As New Dictionary(Of String, Func(Of FunctionCall, String))
 
+    <MethodImpl(MethodImplOptions.AggressiveInlining)>
     Public Function GetCaller() As Func(Of FunctionCall, String)
         Return AddressOf Caller
+    End Function
+
+    <MethodImpl(MethodImplOptions.AggressiveInlining)>
+    Public Function CheckFunction(name As String) As Boolean
+        Return registry.ContainsKey(If(name, "no_name"))
+    End Function
+
+    <MethodImpl(MethodImplOptions.AggressiveInlining)>
+    Public Function [Call](arg As FunctionCall) As String
+        Return Caller(arg)
     End Function
 
     Private Function Caller(arg As FunctionCall) As String
@@ -20,6 +32,7 @@ Public Class FunctionCaller
         Return registry(arg.name)(arg)
     End Function
 
+    <MethodImpl(MethodImplOptions.AggressiveInlining)>
     Public Sub Register(name As String, func As Func(Of FunctionCall, String))
         registry(name) = func
     End Sub

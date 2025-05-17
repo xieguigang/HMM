@@ -23,18 +23,23 @@ Public Class Ollama
     End Property
 
     Dim ai_memory As New List(Of History)
+    Dim ai_caller As New FunctionCaller
 
     Sub New(model As String, Optional server As String = "127.0.0.1:11434")
         Me.model = model
         Me.server = server
     End Sub
 
-    Public Sub AddFunction(func As FunctionModel)
+    Public Sub AddFunction(func As FunctionModel, Optional f As Func(Of FunctionCall, String) = Nothing)
         If tools Is Nothing Then
             tools = New List(Of FunctionTool)
         End If
 
         Call tools.Add(New FunctionTool With {.[function] = func})
+
+        If Not f Is Nothing Then
+            Call ai_caller.Register(func.name, f)
+        End If
     End Sub
 
     Public Function Chat(message As String) As DeepSeekResponse
@@ -75,12 +80,12 @@ Public Class Ollama
                 If deepseek_think = "" AndAlso Not result.message.tool_calls.IsNullOrEmpty Then
                     ' is function calls
                     Dim tool_call As ToolCall = result.message.tool_calls(0)
-                    Dim invoke = tool_call.function
+                    Dim invoke As FunctionCall = tool_call.function
 
                     If tool_invoke Is Nothing Then
                         Throw New InvalidProgramException("the invoke engine function intptr should not be nothing!")
                     Else
-                        Dim fval As String = _tool_invoke(invoke)
+                        Dim fval As String = If(ai_caller.CheckFunction(invoke.name), ai_caller.Call(invoke), _tool_invoke(invoke))
                         Dim [next] As New History With {
                             .content = fval,
                             .role = "tool",
