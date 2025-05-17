@@ -1,6 +1,8 @@
 ﻿Imports System.Net.Http
 Imports System.Text
 Imports Microsoft.VisualBasic.Serialization.JSON
+Imports Ollama.JSON
+Imports Ollama.JSON.FunctionCall
 Imports TalkGenerator.ChatGLM
 
 ''' <summary>
@@ -55,7 +57,7 @@ Public Class Ollama
             Dim msg As New StringBuilder
 
             For Each stream As String In jsonl
-                Dim result = stream.LoadJSON(Of DeepSeekResponseBody)
+                Dim result = stream.LoadJSON(Of ResponseBody)
                 Dim deepseek_think = result.message.content
 
                 If deepseek_think = "" AndAlso Not result.message.tool_calls.IsNullOrEmpty Then
