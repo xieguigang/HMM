@@ -1,9 +1,7 @@
-﻿Imports TalkGenerator
-Imports TalkGenerator.ChatGLM
+﻿Imports Ollama.JSON.FunctionCall
+Imports OllamaServer = Ollama.Ollama
 
 Module Llamatest
-
-
 
     Sub Main2()
         ' Call Llama2.Run("E:\HMM\data\Llama2\stories15M.bin", tokenizer:="E:\HMM\data\Llama2\tokenizer.bin")
@@ -33,7 +31,7 @@ Module Llamatest
                 }
             }
         }
-        Dim ollama As New Ollama("qwen3:30b", "127.0.0.1:11434") With {
+        Dim ollama As New OllamaServer("qwen3:30b", "127.0.0.1:11434") With {
             .tools = FunctionTool.CreateToolSet(tool_time),
             .tool_invoke = AddressOf RunFunctionTool
         }
