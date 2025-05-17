@@ -32,6 +32,17 @@
         Public Property stream As Boolean = False
         Public Property tools As FunctionTool()
 
+        Sub New()
+        End Sub
+
+        Sub New(copy As RequestBody)
+            model = copy.model
+            temperature = copy.temperature
+            messages = copy.messages.ToArray
+            stream = copy.stream
+            tools = copy.tools.ToArray
+        End Sub
+
     End Class
 
     Public Class Result

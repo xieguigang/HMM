@@ -8,6 +8,7 @@ Public Class Ollama
     Public ReadOnly Property server As String
     Public ReadOnly Property model As String
 
+    Public Property temperature As Double = 0.1
     Public Property tools As FunctionTool()
     Public Property tool_invoke As Func(Of FunctionCall, String)
 
@@ -23,7 +24,7 @@ Public Class Ollama
         Me.server = server
     End Sub
 
-    Public Function Chat(message As String, Optional temperature As Double = 0.1) As DeepSeekResponse
+    Public Function Chat(message As String) As DeepSeekResponse
         Dim req As New RequestBody With {
             .messages = {
                 New History With {.content = message, .role = "user"}
@@ -33,6 +34,11 @@ Public Class Ollama
             .temperature = 0.1,
             .tools = tools
         }
+
+        Return Chat(req)
+    End Function
+
+    Private Function Chat(req As RequestBody) As DeepSeekResponse
         Dim json_input As String = req.GetJson
         Dim content = New StringContent(json_input, Encoding.UTF8, "application/json")
         Dim settings As New HttpClientHandler With {
@@ -58,7 +64,19 @@ Public Class Ollama
                         Throw New InvalidProgramException("the invoke engine function intptr should not be nothing!")
                     Else
                         Dim fval As String = _tool_invoke(invoke)
+                        Dim [next] As New History With {
+                            .content = fval,
+                            .role = "tool",
+                            .tool_call_id = tool_call.id
+                        }
+                        Dim messages As New List(Of History)(req.messages)
+                        Call messages.Add(result.message)
+                        Call messages.Add([next])
 
+                        req = New RequestBody(req)
+                        req.messages = messages.ToArray
+
+                        Return Chat(req)
                     End If
                 End If
 
