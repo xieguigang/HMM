@@ -5,6 +5,7 @@ Imports Microsoft.VisualBasic.Scripting.MetaData
 Imports Ollama
 Imports Ollama.JSON.FunctionCall
 Imports SMRUCC.Rsharp.Runtime
+Imports SMRUCC.Rsharp.Runtime.Components
 Imports SMRUCC.Rsharp.Runtime.Components.[Interface]
 Imports SMRUCC.Rsharp.Runtime.Internal.Object
 Imports SMRUCC.Rsharp.Runtime.Interop
@@ -59,7 +60,19 @@ Module OLlamaDemo
             }
         }
 
-        Call model.AddFunction(f)
+        Call model.AddFunction(
+            f, Function(arg)
+                   Dim argSet As InvokeParameter() = Nothing
+                   Dim eval As Object = fcall.Invoke(env, argSet)
+
+                   If eval Is Nothing Then
+                       Return "nothing returns"
+                   ElseIf TypeOf eval Is Message Then
+                       Return $"Error: {DirectCast(eval, Message).message.JoinBy("")}"
+                   Else
+                       Return CLRVector.asCharacter(eval).JoinBy("")
+                   End If
+               End Function)
 
         Return model
     End Function
