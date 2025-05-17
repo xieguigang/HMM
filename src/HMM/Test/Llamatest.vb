@@ -33,11 +33,13 @@ Module Llamatest
         }
         Dim ollama As New OllamaServer("qwen3:30b", "127.0.0.1:11434") With {
             .tools = FunctionTool.CreateToolSet(tool_time),
-            .tool_invoke = AddressOf RunFunctionTool
+            .tool_invoke = AddressOf RunFunctionTool,
+            .temperature = 0.99
         }
         Dim test_call = ollama.Chat("what is the time of beijing city now?")
 
         Call Console.WriteLine(test_call.think)
+        Call Console.WriteLine(New String("-", 120))
         Call Console.WriteLine(test_call.output)
 
         Pause()
