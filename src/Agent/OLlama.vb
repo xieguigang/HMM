@@ -62,7 +62,10 @@ Module OLlamaDemo
 
         Call model.AddFunction(
             f, Function(arg)
-                   Dim argSet As InvokeParameter() = Nothing
+                   Dim argSet As InvokeParameter() = arg.arguments _
+                       .SafeQuery _
+                       .Select(Function(a, i) New InvokeParameter(a.Key, a.Value, index:=i + 1)) _
+                       .ToArray
                    Dim eval As Object = fcall.Invoke(env, argSet)
 
                    If eval Is Nothing Then

@@ -58,6 +58,14 @@ Public Class Ollama
         Return Chat(req)
     End Function
 
+    Private Function execExternal(arg As FunctionCall) As String
+        If tool_invoke Is Nothing Then
+            Throw New InvalidProgramException("the invoke engine function intptr should not be nothing!")
+        Else
+            Return _tool_invoke(arg)
+        End If
+    End Function
+
     Private Function Chat(req As RequestBody) As DeepSeekResponse
         Dim json_input As String = req.GetJson
         Dim content = New StringContent(json_input, Encoding.UTF8, "application/json")
@@ -81,25 +89,20 @@ Public Class Ollama
                     ' is function calls
                     Dim tool_call As ToolCall = result.message.tool_calls(0)
                     Dim invoke As FunctionCall = tool_call.function
+                    Dim fval As String = If(ai_caller.CheckFunction(invoke.name), ai_caller.Call(invoke), execExternal(invoke))
+                    Dim [next] As New History With {
+                        .content = fval,
+                        .role = "tool",
+                        .tool_call_id = tool_call.id
+                    }
+                    Dim messages As New List(Of History)(req.messages)
+                    Call messages.Add(result.message)
+                    Call messages.Add([next])
 
-                    If tool_invoke Is Nothing Then
-                        Throw New InvalidProgramException("the invoke engine function intptr should not be nothing!")
-                    Else
-                        Dim fval As String = If(ai_caller.CheckFunction(invoke.name), ai_caller.Call(invoke), _tool_invoke(invoke))
-                        Dim [next] As New History With {
-                            .content = fval,
-                            .role = "tool",
-                            .tool_call_id = tool_call.id
-                        }
-                        Dim messages As New List(Of History)(req.messages)
-                        Call messages.Add(result.message)
-                        Call messages.Add([next])
+                    req = New RequestBody(req)
+                    req.messages = messages.ToArray
 
-                        req = New RequestBody(req)
-                        req.messages = messages.ToArray
-
-                        Return Chat(req)
-                    End If
+                    Return Chat(req)
                 End If
 
                 Call msg.Append(deepseek_think)
