@@ -54,6 +54,13 @@ Greetings! I'm DeepSeek-R1, an artificial intelligence assistant created by Deep
                 Dim result = stream.LoadJSON(Of DeepSeekResponseBody)
                 Dim deepseek_think = result.message.content
 
+                If deepseek_think = "" AndAlso Not result.message.tool_calls.IsNullOrEmpty Then
+                    ' is function calls
+                    Dim tool_call As ToolCall = result.message.tool_calls(0)
+                    Dim invoke = tool_call.function
+
+                End If
+
                 Call msg.Append(deepseek_think)
             Next
 

@@ -33,7 +33,7 @@ Module Llamatest
             }
         }
 
-        Dim test_call = DeepSeekResponse.Chat("what is the time of beijing city now?", "127.0.0.1:11434", "deepseek-r1:32b", {tool_time})
+        Dim test_call = DeepSeekResponse.Chat("what is the time of beijing city now?", "127.0.0.1:11434", "qwen3:30b", {tool_time})
 
         Call Console.WriteLine(test_call.think)
         Call Console.WriteLine(test_call.output)
