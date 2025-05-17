@@ -1,7 +1,7 @@
 ﻿
 Imports Microsoft.VisualBasic.CommandLine.Reflection
 Imports Microsoft.VisualBasic.Scripting.MetaData
-Imports TalkGenerator
+Imports Ollama
 
 <Package("ollama")>
 Module OLlamaDemo

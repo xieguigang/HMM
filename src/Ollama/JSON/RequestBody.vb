@@ -1,4 +1,6 @@
-﻿Namespace JSON
+﻿Imports Ollama.JSON.FunctionCall
+
+Namespace JSON
 
     Public Class RequestBody
 
