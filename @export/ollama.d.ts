@@ -8,6 +8,12 @@
 */
 declare namespace ollama {
    /**
+     * @param args default value Is ``null``.
+     * @param fcall default value Is ``null``.
+     * @param env default value Is ``null``.
+   */
+   function add_tool(model: object, name: string, desc: string, requires: any, args?: object, fcall?: any, env?: object): any;
+   /**
    */
    function chat(model: object, msg: string): any;
    /**
