@@ -4,6 +4,7 @@ Imports Microsoft.VisualBasic.Linq
 Imports Microsoft.VisualBasic.Scripting.MetaData
 Imports Ollama
 Imports Ollama.JSON.FunctionCall
+Imports SMRUCC.Rsharp.Interpreter.ExecuteEngine.ExpressionSymbols.Operators
 Imports SMRUCC.Rsharp.Runtime
 Imports SMRUCC.Rsharp.Runtime.Components
 Imports SMRUCC.Rsharp.Runtime.Components.[Interface]
@@ -67,6 +68,10 @@ Module OLlamaDemo
                        .Select(Function(a, i) New InvokeParameter(a.Key, a.Value, index:=i + 1)) _
                        .ToArray
                    Dim eval As Object = fcall.Invoke(env, argSet)
+
+                   If TypeOf eval Is ReturnValue Then
+                       eval = DirectCast(eval, ReturnValue).Evaluate(env)
+                   End If
 
                    If eval Is Nothing Then
                        Return "nothing returns"
