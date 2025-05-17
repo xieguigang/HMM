@@ -10,7 +10,7 @@ End Class
 
 Public Class FunctionParameters
 
-    Public Property type As String
+    Public Property type As String = "object"
     Public Property properties As Dictionary(Of String, ParameterProperties)
     Public Property required As String()
 
@@ -20,7 +20,7 @@ Public Class ParameterProperties
 
     Public Property name As String
     Public Property description As String
-    Public Property type As String
+    Public Property type As String = "string"
 
 End Class
 

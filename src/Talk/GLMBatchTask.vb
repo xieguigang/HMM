@@ -30,6 +30,7 @@
         ''' </summary>
         ''' <returns></returns>
         Public Property stream As Boolean = False
+        Public Property tools As FunctionTool()
 
     End Class
 

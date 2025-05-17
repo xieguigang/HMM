@@ -24,7 +24,10 @@ Greetings! I'm DeepSeek-R1, an artificial intelligence assistant created by Deep
         }
     End Function
 
-    Public Shared Function Chat(message As String, ollama_server As String, Optional model As String = "deepseek-r1:671b") As DeepSeekResponse
+    Public Shared Function Chat(message As String, ollama_server As String,
+                                Optional model As String = "deepseek-r1:671b",
+                                Optional tools As FunctionModel() = Nothing) As DeepSeekResponse
+
         Dim url As String = $"http://{ollama_server}/api/chat"
         Dim req As New RequestBody With {
             .messages = {
@@ -32,7 +35,8 @@ Greetings! I'm DeepSeek-R1, an artificial intelligence assistant created by Deep
             },
             .model = model,
             .stream = True,
-            .temperature = 0.1
+            .temperature = 0.1,
+            .tools = If(tools.IsNullOrEmpty, Nothing, FunctionTool.CreateToolSet(tools))
         }
         Dim json_input As String = req.GetJson
         Dim content = New StringContent(json_input, Encoding.UTF8, "application/json")
@@ -64,7 +68,10 @@ Greetings! I'm DeepSeek-R1, an artificial intelligence assistant created by Deep
         If response.IsSuccessStatusCode Then
             Return Await response.Content.ReadAsStringAsync()
         Else
-            Throw New Exception(response.StatusCode.Description)
+            Dim msg As String = Await response.Content.ReadAsStringAsync()
+            msg = $"{response.StatusCode.Description}{vbCrLf}{vbCrLf}{msg}"
+
+            Throw New Exception(msg)
         End If
     End Function
 

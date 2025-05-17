@@ -12,10 +12,31 @@ Module Llamatest
 
 
         ' test deepseek
-        Dim result = DeepSeekResponse.Chat("who are you?", "127.0.0.1:11434", "deepseek-r1:32b")
+        'Dim result = DeepSeekResponse.Chat("who are you?", "127.0.0.1:11434", "deepseek-r1:32b")
 
-        Call Console.WriteLine(result.think)
-        Call Console.WriteLine(result.output)
+        'Call Console.WriteLine(result.think)
+        'Call Console.WriteLine(result.output)
+
+        Dim tool_time As New FunctionModel With {
+            .description = "get time of now",
+            .name = "get_time",
+            .parameters = New FunctionParameters With {
+                .required = {"loc"},
+                .properties = New Dictionary(Of String, ParameterProperties) From {
+                    {
+                        "loc", New ParameterProperties With {
+                            .name = "loc",
+                            .description = "the location name for get current local time"
+                        }
+                    }
+                }
+            }
+        }
+
+        Dim test_call = DeepSeekResponse.Chat("what is the time of beijing city now?", "127.0.0.1:11434", "deepseek-r1:32b", {tool_time})
+
+        Call Console.WriteLine(test_call.think)
+        Call Console.WriteLine(test_call.output)
 
         Pause()
     End Sub
