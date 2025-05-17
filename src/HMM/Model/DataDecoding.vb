@@ -1,6 +1,3 @@
-Imports System
-Imports Microsoft.VisualBasic
-
 Namespace Model
 
     ''' <summary>
