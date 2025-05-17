@@ -30,6 +30,7 @@ Namespace ChatGLM
         user
         assistant
         system
+        tool
     End Enum
 
     Public Class History
@@ -40,6 +41,8 @@ Namespace ChatGLM
         ''' 1, user
         ''' 2, assistant or system
         ''' 3, tool
+        ''' 
+        ''' could be get the name tostring of <see cref="roles"/> enums value
         ''' </summary>
         ''' <returns></returns>
         Public Property role As String
