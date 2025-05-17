@@ -3,6 +3,9 @@ Imports System.Text
 Imports Microsoft.VisualBasic.Serialization.JSON
 Imports TalkGenerator.ChatGLM
 
+''' <summary>
+''' the ollama client model
+''' </summary>
 Public Class Ollama
 
     Public ReadOnly Property server As String
