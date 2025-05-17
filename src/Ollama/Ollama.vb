@@ -3,7 +3,6 @@ Imports System.Text
 Imports Microsoft.VisualBasic.Serialization.JSON
 Imports Ollama.JSON
 Imports Ollama.JSON.FunctionCall
-Imports TalkGenerator.ChatGLM
 
 ''' <summary>
 ''' the ollama client model
