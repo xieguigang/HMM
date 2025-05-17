@@ -1,4 +1,4 @@
-
+О╩©
 Imports System.IO
 Imports Microsoft.VisualBasic.CommandLine.Reflection
 Imports Microsoft.VisualBasic.Language
@@ -65,7 +65,7 @@ Public Module ChatGLM
     <ExportAPI("batch_transaltion")>
     <RApiReturn(GetType(GLMBatchTask))>
     Public Function batch_translation(content As dataframe,
-                                      Optional prompt_text As String = "дЦйгр╩╦Ж╢сс╒нд╣╫жпнд╣дсОят╥╜рКфВ",
+                                      Optional prompt_text As String = "Д╫═Ф≤╞Д╦─Д╦╙Д╩▌Х▀╠Ф√┤Е┬╟Д╦╜Ф√┤Г └Х╞╜Х╗─Г©╩Х╞▒Е≥╗",
                                       Optional add_explains As Boolean = True,
                                       Optional env As Environment = Nothing) As Object
 
@@ -89,13 +89,13 @@ Public Module ChatGLM
             text = text.Replace("%", "").Replace("\", "-")
 
             If add_explains Then
-                prompt_data = $"# хннЯё╨╤тртобсц╩╖нд╠╬╫Ьппс╒нд╣╫жпнд╣д╥╜рКё╛пХр╙йДЁЖ╥╜рК╨С╣д╫А╧Шнд╠╬рт╪╟╤тс╕╣дцШ╢й╫Бймё╛
-# сц╩╖нд╠╬ё╨ data=""{text}""
-# йДЁЖ╦Яй╫ё╨ {{""zh-CN"": "" "", ""explains"": "" ""}}"
+                prompt_data = $"# Д╩╩Е┼║О╪ Е╞╧Д╩╔Д╦▀Г■╗Ф┬╥Ф√┤Ф°╛Х©⌡Х║▄Х▀╠Ф√┤Е┬╟Д╦╜Ф√┤Г └Г©╩Х╞▒О╪▄И°─Х╕│Х╬⌠Е┤╨Г©╩Х╞▒Е░▌Г └Г╩⌠Ф·°Ф√┤Ф°╛Д╩╔Е▐┼Е╞╧Е╨■Г └Е░█Х╞█Х╖ёИ┤┼О╪▄
+# Г■╗Ф┬╥Ф√┤Ф°╛О╪  data=""{text}""
+# Х╬⌠Е┤╨Ф═╪Е╪▐О╪  {{""zh-CN"": "" "", ""explains"": "" ""}}"
             Else
-                prompt_data = $"# хннЯё╨╤тртобсц╩╖нд╠╬╫Ьппс╒нд╣╫жпнд╣д╥╜рКё╛ж╩йДЁЖ╥╜рК╨С╣д╫А╧Шнд╠╬ё╛
-# сц╩╖нд╠╬ё╨ data=""{text}""
-# йДЁЖ╦Яй╫ё╨ {{""zh-CN"": "" ""}}"
+                prompt_data = $"# Д╩╩Е┼║О╪ Е╞╧Д╩╔Д╦▀Г■╗Ф┬╥Ф√┤Ф°╛Х©⌡Х║▄Х▀╠Ф√┤Е┬╟Д╦╜Ф√┤Г └Г©╩Х╞▒О╪▄Е▐╙Х╬⌠Е┤╨Г©╩Х╞▒Е░▌Г └Г╩⌠Ф·°Ф√┤Ф°╛О╪▄
+# Г■╗Ф┬╥Ф√┤Ф°╛О╪  data=""{text}""
+# Х╬⌠Е┤╨Ф═╪Е╪▐О╪  {{""zh-CN"": "" ""}}"
             End If
 
             batch(i) = New GLMBatchTask With {
