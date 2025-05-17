@@ -22,6 +22,7 @@ Public Class Ollama
         End Get
     End Property
 
+    Dim ai_memory As New List(Of History)
 
     Sub New(model As String, Optional server As String = "127.0.0.1:11434")
         Me.model = model
@@ -29,10 +30,12 @@ Public Class Ollama
     End Sub
 
     Public Function Chat(message As String) As DeepSeekResponse
+        Dim newUserMsg As New History With {.content = message, .role = "user"}
+
+        ai_memory.Add(newUserMsg)
+
         Dim req As New RequestBody With {
-            .messages = {
-                New History With {.content = message, .role = "user"}
-            },
+            .messages = ai_memory.ToArray,
             .model = model,
             .stream = True,
             .temperature = 0.1,
@@ -58,6 +61,8 @@ Public Class Ollama
             For Each stream As String In jsonl
                 Dim result = stream.LoadJSON(Of ResponseBody)
                 Dim deepseek_think = result.message.content
+
+                Call ai_memory.Add(result.message)
 
                 If deepseek_think = "" AndAlso Not result.message.tool_calls.IsNullOrEmpty Then
                     ' is function calls

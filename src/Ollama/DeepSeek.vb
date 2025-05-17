@@ -17,7 +17,7 @@ Greetings! I'm DeepSeek-R1, an artificial intelligence assistant created by Deep
         content_str = content_str.Substring(think_str.Length)
         Return New DeepSeekResponse With {
             .think = Strings.Trim(think_str.GetStackValue(">", "<").Trim(ASCII.CR, ASCII.LF, ASCII.TAB, " "c)),
-            .output = Strings.Trim(content_str).Trim(ASCII.CR, ASCII.LF, ASCII.TAB, " "c)
+            .output = Strings.Trim(Strings.Trim(content_str).Trim(ASCII.CR, ASCII.LF, ASCII.TAB, " "c))
         }
     End Function
 
