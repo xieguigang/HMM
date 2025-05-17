@@ -13,7 +13,7 @@ Public Class Ollama
     Public ReadOnly Property model As String
 
     Public Property temperature As Double = 0.1
-    Public Property tools As FunctionTool()
+    Public Property tools As List(Of FunctionTool)
     Public Property tool_invoke As Func(Of FunctionCall, String)
 
     Public ReadOnly Property url As String
@@ -39,7 +39,7 @@ Public Class Ollama
             .model = model,
             .stream = True,
             .temperature = 0.1,
-            .tools = tools
+            .tools = tools.ToArray
         }
 
         Return Chat(req)

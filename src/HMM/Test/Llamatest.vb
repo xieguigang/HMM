@@ -32,7 +32,7 @@ Module Llamatest
             }
         }
         Dim ollama As New OllamaServer("qwen3:30b", "127.0.0.1:11434") With {
-            .tools = FunctionTool.CreateToolSet(tool_time),
+            .tools = New List(Of FunctionTool)(FunctionTool.CreateToolSet(tool_time)),
             .tool_invoke = AddressOf RunFunctionTool,
             .temperature = 0.99
         }

@@ -2,6 +2,9 @@
 Imports Microsoft.VisualBasic.CommandLine.Reflection
 Imports Microsoft.VisualBasic.Scripting.MetaData
 Imports Ollama
+Imports SMRUCC.Rsharp.Runtime.Components.[Interface]
+Imports SMRUCC.Rsharp.Runtime.Internal.Object
+Imports SMRUCC.Rsharp.Runtime.Interop
 
 <Package("ollama")>
 Module OLlamaDemo
@@ -14,6 +17,15 @@ Module OLlamaDemo
     <ExportAPI("chat")>
     Public Function chat(model As Ollama.Ollama, msg As String) As Object
         Return model.Chat(msg)
+    End Function
+
+    <ExportAPI("add_tool")>
+    Public Function add_tool(model As Ollama.Ollama, name$, desc$,
+                             <RByRefValueAssign> fcall As RFunction,
+                             <RListObjectArgument>
+                             Optional args As list = Nothing,
+                             Optional env As Environment = Nothing) As Object
+
     End Function
 
     ' start server
