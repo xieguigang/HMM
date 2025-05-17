@@ -6,6 +6,11 @@ Imports Ollama
 <Package("ollama")>
 Module OLlamaDemo
 
+    <ExportAPI("new")>
+    Public Function create(model As String, Optional ollama_server As String = "127.0.0.1:11434") As Ollama.Ollama
+        Return New Ollama.Ollama(model, ollama_server)
+    End Function
+
     ' start server
     ' docker run --privileged --net=host --env OLLAMA_HOST=0.0.0.0  -itd  -p "11434:11434" ubuntu:deepseek_20250301 ollama serve
     ' start model server
