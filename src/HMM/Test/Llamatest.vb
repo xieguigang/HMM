@@ -1,4 +1,5 @@
 ﻿Imports TalkGenerator
+Imports TalkGenerator.ChatGLM
 
 Module Llamatest
 
@@ -32,8 +33,11 @@ Module Llamatest
                 }
             }
         }
-
-        Dim test_call = DeepSeekResponse.Chat("what is the time of beijing city now?", "127.0.0.1:11434", "qwen3:30b", {tool_time})
+        Dim ollama As New Ollama("qwen3:30b", "127.0.0.1:11434") With {
+            .tools = FunctionTool.CreateToolSet(tool_time),
+            .tool_invoke = AddressOf RunFunctionTool
+        }
+        Dim test_call = ollama.Chat("what is the time of beijing city now?")
 
         Call Console.WriteLine(test_call.think)
         Call Console.WriteLine(test_call.output)
@@ -41,5 +45,7 @@ Module Llamatest
         Pause()
     End Sub
 
+    Private Function RunFunctionTool(invoke As FunctionCall) As String
 
+    End Function
 End Module

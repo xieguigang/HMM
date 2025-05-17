@@ -1,0 +1,79 @@
+﻿Imports System.Net.Http
+Imports System.Text
+Imports Microsoft.VisualBasic.Serialization.JSON
+Imports TalkGenerator.ChatGLM
+
+Public Class Ollama
+
+    Public ReadOnly Property server As String
+    Public ReadOnly Property model As String
+
+    Public Property tools As FunctionTool()
+    Public Property tool_invoke As Func(Of FunctionCall, String)
+
+    Public ReadOnly Property url As String
+        Get
+            Return $"http://{_server}/api/chat"
+        End Get
+    End Property
+
+
+    Sub New(model As String, Optional server As String = "127.0.0.1:11434")
+        Me.model = model
+        Me.server = server
+    End Sub
+
+    Public Function Chat(message As String, Optional temperature As Double = 0.1) As DeepSeekResponse
+        Dim req As New RequestBody With {
+            .messages = {
+                New History With {.content = message, .role = "user"}
+            },
+            .model = model,
+            .stream = True,
+            .temperature = 0.1,
+            .tools = tools
+        }
+        Dim json_input As String = req.GetJson
+        Dim content = New StringContent(json_input, Encoding.UTF8, "application/json")
+        Dim settings As New HttpClientHandler With {
+            .Proxy = Nothing,
+            .UseProxy = False
+        }
+
+        Using client As New HttpClient(settings) With {.Timeout = TimeSpan.FromHours(1)}
+            Dim resp As String = RequestMessage(client, url, content).GetAwaiter.GetResult
+            Dim jsonl As String() = resp.LineTokens
+            Dim msg As New StringBuilder
+
+            For Each stream As String In jsonl
+                Dim result = stream.LoadJSON(Of DeepSeekResponseBody)
+                Dim deepseek_think = result.message.content
+
+                If deepseek_think = "" AndAlso Not result.message.tool_calls.IsNullOrEmpty Then
+                    ' is function calls
+                    Dim tool_call As ToolCall = result.message.tool_calls(0)
+                    Dim invoke = tool_call.function
+
+                End If
+
+                Call msg.Append(deepseek_think)
+            Next
+
+            Dim output As DeepSeekResponse = DeepSeekResponse.ParseResponse(msg.ToString)
+            Return output
+        End Using
+    End Function
+
+    Private Shared Async Function RequestMessage(client As HttpClient, url As String, content As StringContent) As Task(Of String)
+        Dim response As HttpResponseMessage = Await client.PostAsync(url, content)
+
+        If response.IsSuccessStatusCode Then
+            Return Await response.Content.ReadAsStringAsync()
+        Else
+            Dim msg As String = Await response.Content.ReadAsStringAsync()
+            msg = $"{response.StatusCode.Description}{vbCrLf}{vbCrLf}{msg}"
+
+            Throw New Exception(msg)
+        End If
+    End Function
+End Class
