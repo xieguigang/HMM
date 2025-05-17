@@ -2,7 +2,7 @@
 //
 //    imports "chatglm" from "Agent";
 //
-// ref=Agent.ChatGLM@Agent, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+// ref=Agent.ChatGLMHelper@Agent, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 
 /**
  * 

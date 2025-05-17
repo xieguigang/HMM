@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>TalkGenerator.ChatGLM.GLMBatchTask</title>
+    <title>Ollama.DeepSeekResponse</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
     <link rel="stylesheet" type="text/css" href="../../_assets/page.css">
@@ -13,37 +13,32 @@
 
         <table style="width: 100%;">
             <tr>
-                <td>GLMBatchTask {TalkGenerator.ChatGLM}</td>
+                <td>DeepSeekResponse {Ollama}</td>
                 <td style="text-align: right;">.NET clr documentation</td>
             </tr>
         </table>
 
-        <h2>GLMBatchTask</h2>
+        <h2>DeepSeekResponse</h2>
 
         <h3>Description</h3>
 
-        <p>a task request data for invoke chatglm</p>
+        
 
         <h3>Declare</h3>        
 
         <pre>
             <code id="clr_ts">
-# namespace TalkGenerator.ChatGLM
-export class GLMBatchTask {
-   body: <a href="/vignettes/clr/TalkGenerator/ChatGLM/RequestBody.html">RequestBody</a>;
-   # 每个请求必须包含custom_id且是唯一的,长度必须为 6 -64 位.用来将结果和输入进行匹配.
-   custom_id: string;
-   method: string;
-   url: string;
+# namespace Ollama
+export class DeepSeekResponse {
+   output: string;
+   think: string;
 }
 </code>
         </pre>
 
         <h3>.NET clr type reference tree</h3>
 
-        <ol>
-<li>use by <i>property</i> member <code>body</code>: <a href="/vignettes/clr/TalkGenerator/ChatGLM/RequestBody.html">RequestBody</a></li>
-</ol>
+        this clr type has no other .net clr type reference.
 
 
         <hr />
