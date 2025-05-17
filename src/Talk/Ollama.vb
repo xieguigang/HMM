@@ -54,6 +54,12 @@ Public Class Ollama
                     Dim tool_call As ToolCall = result.message.tool_calls(0)
                     Dim invoke = tool_call.function
 
+                    If tool_invoke Is Nothing Then
+                        Throw New InvalidProgramException("the invoke engine function intptr should not be nothing!")
+                    Else
+                        Dim fval As String = _tool_invoke(invoke)
+
+                    End If
                 End If
 
                 Call msg.Append(deepseek_think)
