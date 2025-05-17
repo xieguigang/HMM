@@ -1,5 +1,4 @@
 ﻿Imports System.Text
-Imports TalkGenerator.ChatGLM
 Imports ASCII = Microsoft.VisualBasic.Text.ASCII
 
 Public Class DeepSeekResponse
@@ -17,7 +16,7 @@ Greetings! I'm DeepSeek-R1, an artificial intelligence assistant created by Deep
         Dim think_str As String = content_str.Match("[<]think[>].+[<]/think[>]", RegularExpressions.RegexOptions.Singleline)
         content_str = content_str.Substring(think_str.Length)
         Return New DeepSeekResponse With {
-            .think = think_str.GetStackValue(">", "<").Trim(ASCII.CR, ASCII.LF, ASCII.TAB, " "c),
+            .think = Strings.Trim(think_str.GetStackValue(">", "<").Trim(ASCII.CR, ASCII.LF, ASCII.TAB, " "c)),
             .output = Strings.Trim(content_str).Trim(ASCII.CR, ASCII.LF, ASCII.TAB, " "c)
         }
     End Function
