@@ -14,7 +14,7 @@ Imports TalkGenerator.ChatGLM
 
 <Package("chatglm")>
 <RTypeExport("chat_history", GetType(ChatHistory))>
-Public Module ChatGLM
+Public Module ChatGLMHelper
 
     ''' <summary>
     ''' add a new record of chat input and ai response for create the history data
