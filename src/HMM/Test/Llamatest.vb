@@ -46,6 +46,6 @@ Module Llamatest
     End Sub
 
     Private Function RunFunctionTool(invoke As FunctionCall) As String
-
+        Return $"current time of {invoke.arguments.First.Value} is yahaha!"
     End Function
 End Module
