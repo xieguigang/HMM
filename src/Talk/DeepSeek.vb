@@ -36,8 +36,12 @@ Greetings! I'm DeepSeek-R1, an artificial intelligence assistant created by Deep
         }
         Dim json_input As String = req.GetJson
         Dim content = New StringContent(json_input, Encoding.UTF8, "application/json")
+        Dim settings As New HttpClientHandler With {
+            .Proxy = Nothing,
+            .UseProxy = False
+        }
 
-        Using client As New HttpClient With {.Timeout = TimeSpan.FromHours(1)}
+        Using client As New HttpClient(settings) With {.Timeout = TimeSpan.FromHours(1)}
             Dim resp As String = RequestMessage(client, url, content).GetAwaiter.GetResult
             Dim jsonl As String() = resp.LineTokens
             Dim msg As New StringBuilder
