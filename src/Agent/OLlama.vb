@@ -11,6 +11,11 @@ Module OLlamaDemo
         Return New Ollama.Ollama(model, ollama_server)
     End Function
 
+    <ExportAPI("chat")>
+    Public Function chat(model As Ollama.Ollama, msg As String) As Object
+        Return model.Chat(msg)
+    End Function
+
     ' start server
     ' docker run --privileged --net=host --env OLLAMA_HOST=0.0.0.0  -itd  -p "11434:11434" ubuntu:deepseek_20250301 ollama serve
     ' start model server
