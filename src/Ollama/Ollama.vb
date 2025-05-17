@@ -29,6 +29,14 @@ Public Class Ollama
         Me.server = server
     End Sub
 
+    Public Sub AddFunction(func As FunctionModel)
+        If tools Is Nothing Then
+            tools = New List(Of FunctionTool)
+        End If
+
+        Call tools.Add(New FunctionTool With {.[function] = func})
+    End Sub
+
     Public Function Chat(message As String) As DeepSeekResponse
         Dim newUserMsg As New History With {.content = message, .role = "user"}
 

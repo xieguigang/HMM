@@ -26,9 +26,9 @@ Module OLlamaDemo
 
     <ExportAPI("add_tool")>
     Public Function add_tool(model As Ollama.Ollama, name$, desc$,
-                             Optional args As list = Nothing,
                              <RRawVectorArgument>
-                             Optional requires As Object = Nothing,
+                             requires As Object,
+                             Optional args As list = Nothing,
                              <RByRefValueAssign>
                              Optional fcall As RFunction = Nothing,
                              Optional env As Environment = Nothing) As Object
@@ -58,6 +58,10 @@ Module OLlamaDemo
                 .properties = argList
             }
         }
+
+        Call model.AddFunction(f)
+
+        Return model
     End Function
 
     ' start server
