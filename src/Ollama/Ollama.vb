@@ -45,7 +45,7 @@ Public Class Ollama
     Public Function Chat(message As String) As DeepSeekResponse
         Dim newUserMsg As New History With {.content = message, .role = "user"}
 
-        ai_memory.Add(newUserMsg)
+        Call ai_memory.Add(newUserMsg)
 
         Dim req As New RequestBody With {
             .messages = ai_memory.ToArray,

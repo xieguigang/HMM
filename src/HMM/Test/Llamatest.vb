@@ -15,7 +15,12 @@ Module Llamatest
         Dim result = DeepSeekResponse.Chat("who are you?", "127.0.0.1:11434", "deepseek-r1:32b")
 
         Call Console.WriteLine(result.think)
+        Call Console.WriteLine()
+        Call Console.WriteLine(New String("-", 120))
         Call Console.WriteLine(result.output)
+        Call Console.WriteLine()
+
+        Pause()
 
         Dim tool_time As New FunctionModel With {
             .description = "get time of now",
