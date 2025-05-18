@@ -52,7 +52,7 @@ Public Class Ollama
             .model = model,
             .stream = True,
             .temperature = 0.1,
-            .tools = tools.ToArray
+            .tools = If(tools.IsNullOrEmpty, Nothing, tools.ToArray)
         }
 
         Return Chat(req)

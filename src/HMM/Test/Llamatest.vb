@@ -1,4 +1,5 @@
-﻿Imports Ollama.JSON.FunctionCall
+﻿Imports Ollama
+Imports Ollama.JSON.FunctionCall
 Imports OllamaServer = Ollama.Ollama
 
 Module Llamatest
@@ -11,10 +12,10 @@ Module Llamatest
 
 
         ' test deepseek
-        'Dim result = DeepSeekResponse.Chat("who are you?", "127.0.0.1:11434", "deepseek-r1:32b")
+        Dim result = DeepSeekResponse.Chat("who are you?", "127.0.0.1:11434", "deepseek-r1:32b")
 
-        'Call Console.WriteLine(result.think)
-        'Call Console.WriteLine(result.output)
+        Call Console.WriteLine(result.think)
+        Call Console.WriteLine(result.output)
 
         Dim tool_time As New FunctionModel With {
             .description = "get time of now",
