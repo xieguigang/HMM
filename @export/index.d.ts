@@ -8,4 +8,7 @@ declare namespace LLMs {
       */
       function onLoad(): object;
    }
+   /**
+   */
+   function agent_readcsv(): object;
 }
