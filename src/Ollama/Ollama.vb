@@ -1,5 +1,7 @@
-﻿Imports System.Net.Http
+﻿Imports System.IO
+Imports System.Net.Http
 Imports System.Text
+Imports Microsoft.VisualBasic.ApplicationServices
 Imports Microsoft.VisualBasic.Serialization.JSON
 Imports Ollama.JSON
 Imports Ollama.JSON.FunctionCall
@@ -24,10 +26,12 @@ Public Class Ollama
 
     Dim ai_memory As New List(Of History)
     Dim ai_caller As New FunctionCaller
+    Dim ai_log As TextWriter
 
     Sub New(model As String, Optional server As String = "127.0.0.1:11434")
         Me.model = model
         Me.server = server
+        Me.ai_log = New StreamWriter(TempFileSystem.GetAppSysTempFile(".jsonl", prefix:="ollama_log_" & App.PID & "-history_message").Open(FileMode.OpenOrCreate, doClear:=True))
     End Sub
 
     Public Sub AddFunction(func As FunctionModel, Optional f As Func(Of FunctionCall, String) = Nothing)
@@ -46,6 +50,7 @@ Public Class Ollama
         Dim newUserMsg As New History With {.content = message, .role = "user"}
 
         Call ai_memory.Add(newUserMsg)
+        Call ai_log.WriteLine(newUserMsg.GetJson)
 
         Dim req As New RequestBody With {
             .messages = ai_memory.ToArray,
@@ -84,6 +89,7 @@ Public Class Ollama
                 Dim deepseek_think = result.message.content
 
                 Call ai_memory.Add(result.message)
+                Call ai_log.WriteLine(stream)
 
                 If deepseek_think = "" AndAlso Not result.message.tool_calls.IsNullOrEmpty Then
                     ' is function calls
