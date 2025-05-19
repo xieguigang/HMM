@@ -1,9 +1,11 @@
 ﻿Imports System.Runtime.CompilerServices
+Imports Microsoft.VisualBasic.Serialization.JSON
 Imports Ollama.JSON.FunctionCall
 
 Public Class FunctionCaller
 
     ReadOnly registry As New Dictionary(Of String, Func(Of FunctionCall, String))
+    ReadOnly verbose As Boolean = True
 
     <MethodImpl(MethodImplOptions.AggressiveInlining)>
     Public Function GetCaller() As Func(Of FunctionCall, String)
@@ -27,6 +29,10 @@ Public Class FunctionCaller
 
         If Not registry.ContainsKey(arg.name) Then
             Return $"the given function '{arg.name}' to invoke is not existed!"
+        End If
+
+        If verbose Then
+            Call VBDebugger.EchoLine($"[ollama]call: {arg.GetJson}")
         End If
 
         Return registry(arg.name)(arg)
