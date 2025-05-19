@@ -1,5 +1,6 @@
 ﻿
 Imports Microsoft.VisualBasic.CommandLine.Reflection
+Imports Microsoft.VisualBasic.ComponentModel.DataSourceModel
 Imports Microsoft.VisualBasic.Linq
 Imports Microsoft.VisualBasic.Scripting.MetaData
 Imports Ollama
@@ -71,6 +72,14 @@ Module OLlamaDemo
 
                    If TypeOf eval Is ReturnValue Then
                        eval = DirectCast(eval, ReturnValue).Evaluate(env)
+                   End If
+                   If TypeOf eval Is list Then
+                       ' to json
+                       eval = env.globalEnvironment.doCall(
+                           "JSON::json_encode",
+                           New NamedValue(Of Object)("x", eval),
+                           New NamedValue(Of Object)("env", env)
+                       )
                    End If
 
                    If eval Is Nothing Then
